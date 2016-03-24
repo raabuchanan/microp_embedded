@@ -33,3 +33,12 @@ Listings
 
 # Debug files
 *.dSYM/
+
+# Folders
+Disvovery/Listings
+Disvovery/Objects
+Disvovery/DebugConfig
+
+Nucleo/Listings
+Nucleo/Objects
+Nucleo/DebugConfig
