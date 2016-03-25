@@ -82,15 +82,6 @@
 #define IDB05A1 1
 
 /**
- * @brief Instantiate two new services:
- *        1. Timer Service with two characteristics
- *           - Seconds characteristic (Readable only)
- *           - Minutes characteristics (Readable and Notifiable)
- *        2. LED Button Service with one characteristic
- *           - LED characteristic (Readable and Writable)
- */
-#define NEW_SERVICES 0
-/**
  * @}
  */
 
