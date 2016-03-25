@@ -32,6 +32,8 @@ osMutexId temp_mutex;														/** temperature mutex */
 osMutexId pitch_mutex;													/** pitch mutex */
 osMutexId roll_mutex;														/** roll mutex */
 
+SPI_HandleTypeDef SPI_Handle;
+
 /**
 	These lines are mandatory to make CMSIS-RTOS RTX work with te new Cube HAL
 */
@@ -83,11 +85,13 @@ void SystemClock_Config(void) {
   * Main function
   */
 int main (void) {
-
+	uint8_t data;
   osKernelInitialize();                     /* initialize CMSIS-RTOS          */
 
   HAL_Init();                               /* Initialize the HAL Library     */
+	
 
+	
   SystemClock_Config();                     /* Configure the System Clock     */
 	
 	/* Initialize GPIOs */
@@ -110,6 +114,34 @@ int main (void) {
 	//start_Thread_keypad();
   
 	osKernelStart();  /* start thread execution         */
+	
+	__HAL_RCC_SPI1_CLK_ENABLE();
+	
+	HAL_SPI_MspInit(&SPI_Handle); /* Initialize the SPI low level resources */
+	
+	HAL_SPI_DeInit(&SPI_Handle);
+	
+	SPI_Handle.Instance = SPI2;
+	SPI_Handle.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_4;
+	SPI_Handle.Init.CLKPhase = SPI_PHASE_1EDGE;
+	SPI_Handle.Init.CLKPolarity = SPI_POLARITY_LOW;
+	SPI_Handle.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
+	SPI_Handle.Init.CRCPolynomial = 7;
+	SPI_Handle.Init.DataSize = SPI_DATASIZE_8BIT;
+	SPI_Handle.Init.Direction = SPI_DIRECTION_2LINES;
+	SPI_Handle.Init.FirstBit = SPI_FIRSTBIT_MSB;
+	SPI_Handle.Init.Mode = SPI_MODE_SLAVE;
+	SPI_Handle.Init.NSS = SPI_NSS_SOFT;
+	SPI_Handle.Init.TIMode = SPI_TIMODE_DISABLED;
+	
+	HAL_SPI_Init(&SPI_Handle);
+
+	__HAL_SPI_ENABLE(&SPI_Handle);
+	
+	while(1){
+	HAL_SPI_Receive (&SPI_Handle, &data, 0x01, 10);
+	}
+	
 }
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {

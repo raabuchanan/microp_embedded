@@ -82,6 +82,10 @@ extern volatile uint8_t set_connectable;
 extern volatile int connected;
 extern AxesRaw_t axes_data;
 uint8_t bnrg_expansion_board = IDB04A1; /* at startup, suppose the X-NUCLEO-IDB04A1 is used */
+
+SPI_HandleTypeDef SPI_Handle;
+
+
 /**
  * @}
  */
@@ -141,6 +145,8 @@ int main(void)
    */
   HAL_Init();
   
+
+
 #if NEW_SERVICES
   /* Configure LED2 */
   BSP_LED_Init(LED2); 
@@ -152,6 +158,27 @@ int main(void)
   /* Configure the system clock */
 	/* SYSTEM CLOCK = 32 MHz */
   SystemClock_Config();
+
+		__HAL_RCC_SPI1_CLK_ENABLE();
+	
+	HAL_SPI_MspInit(&SPI_Handle); /* Initialize the SPI low level resources */
+	
+	HAL_SPI_DeInit(&SPI_Handle);
+	SPI_Handle.Instance = SPI1;
+	SPI_Handle.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_4;
+	SPI_Handle.Init.CLKPhase = SPI_PHASE_1EDGE;
+	SPI_Handle.Init.CLKPolarity = SPI_POLARITY_LOW;
+	SPI_Handle.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
+	SPI_Handle.Init.CRCPolynomial = 7;
+	SPI_Handle.Init.DataSize = SPI_DATASIZE_8BIT;
+	SPI_Handle.Init.Direction = SPI_DIRECTION_2LINES;
+	SPI_Handle.Init.FirstBit = SPI_FIRSTBIT_MSB;
+	SPI_Handle.Init.Mode = SPI_MODE_MASTER;
+	SPI_Handle.Init.NSS = SPI_NSS_SOFT;
+	SPI_Handle.Init.TIMode = SPI_TIMODE_DISABLED;
+	if (HAL_SPI_Init(&SPI_Handle) != HAL_OK) {printf ("ERROR: Error in initialising SPI1 \n");};
+
+	__HAL_SPI_ENABLE(&SPI_Handle);
 
   /* Initialize the BlueNRG SPI driver */
   BNRG_SPI_Init();
@@ -172,7 +199,8 @@ int main(void)
    * command after reset otherwise it will fail.
    */
   BlueNRG_RST();
-  
+	
+	
   PRINTF("HWver %d, FWver %d", hwVersion, fwVersion);
 	PRINTF("\n\n");
   
@@ -274,6 +302,8 @@ int main(void)
   /* Set output power level */
   ret = aci_hal_set_tx_power_level(1,4);
 
+	uint8_t data = 0;
+	
   while(1)
   {
     HCI_Process();
@@ -281,6 +311,11 @@ int main(void)
 #if NEW_SERVICES
     Update_Time_Characteristics();
 #endif
+		
+		HAL_SPI_Transmit(&SPI_Handle, &data, sizeof(data), 10);
+		
+		data = data + 1;
+		
   }
 }
 
