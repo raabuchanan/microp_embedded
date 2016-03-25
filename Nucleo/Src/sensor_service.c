@@ -59,15 +59,8 @@ volatile uint8_t notification_enabled = FALSE;
 volatile AxesRaw_t axes_data = {0, 0, 0};
 uint16_t sampleServHandle, TXCharHandle, RXCharHandle;
 uint16_t accServHandle, freeFallCharHandle, accCharHandle;
-uint16_t envSensServHandle, tempCharHandle, pressCharHandle, humidityCharHandle;
+uint16_t tempServHandle, tempCharHandle, pressCharHandle, humidityCharHandle;
 
-#if NEW_SERVICES
-  uint16_t timeServHandle, secondsCharHandle, minuteCharHandle;
-  uint16_t ledServHandle, ledButtonCharHandle;
-  uint8_t ledState = 0;
-  int previousMinuteValue = -1;
-  extern uint8_t bnrg_expansion_board;
-#endif
 /**
  * @}
  */
@@ -89,7 +82,7 @@ do {\
 #define COPY_FREE_FALL_UUID(uuid_struct)    COPY_UUID_128(uuid_struct,0xe2,0x3e,0x78,0xa0, 0xcf,0x4a, 0x11,0xe1, 0x8f,0xfc, 0x00,0x02,0xa5,0xd5,0xc5,0x1b)
 #define COPY_ACC_UUID(uuid_struct)          COPY_UUID_128(uuid_struct,0x34,0x0a,0x1b,0x80, 0xcf,0x4b, 0x11,0xe1, 0xac,0x36, 0x00,0x02,0xa5,0xd5,0xc5,0x1b)
 
-#define COPY_ENV_SENS_SERVICE_UUID(uuid_struct)  COPY_UUID_128(uuid_struct,0x42,0x82,0x1a,0x40, 0xe4,0x77, 0x11,0xe2, 0x82,0xd0, 0x00,0x02,0xa5,0xd5,0xc5,0x1b)
+#define COPY_TEMP_SERVICE_UUID(uuid_struct)  COPY_UUID_128(uuid_struct,0x42,0x82,0x1a,0x40, 0xe4,0x77, 0x11,0xe2, 0x82,0xd0, 0x00,0x02,0xa5,0xd5,0xc5,0x1b)
 #define COPY_TEMP_CHAR_UUID(uuid_struct)         COPY_UUID_128(uuid_struct,0xa3,0x2e,0x55,0x20, 0xe4,0x77, 0x11,0xe2, 0xa9,0xe3, 0x00,0x02,0xa5,0xd5,0xc5,0x1b)
 #define COPY_PRESS_CHAR_UUID(uuid_struct)        COPY_UUID_128(uuid_struct,0xcd,0x20,0xc4,0x80, 0xe4,0x8b, 0x11,0xe2, 0x84,0x0b, 0x00,0x02,0xa5,0xd5,0xc5,0x1b)
 #define COPY_HUMIDITY_CHAR_UUID(uuid_struct)     COPY_UUID_128(uuid_struct,0x01,0xc5,0x0b,0x60, 0xe4,0x8c, 0x11,0xe2, 0xa0,0x73, 0x00,0x02,0xa5,0xd5,0xc5,0x1b)
@@ -192,12 +185,12 @@ tBleStatus Acc_Update(AxesRaw_t *data)
 }
 
 /**
- * @brief  Add the Environmental Sensor service.
+ * @brief  Add the Temperature service.
  *
  * @param  None
  * @retval Status
  */
-tBleStatus Add_Environmental_Sensor_Service(void)
+tBleStatus Add_Temperature_Service(void)
 {
   tBleStatus ret;
   uint8_t uuid[16];
@@ -205,14 +198,14 @@ tBleStatus Add_Environmental_Sensor_Service(void)
   charactFormat charFormat;
   uint16_t descHandle;
   
-  COPY_ENV_SENS_SERVICE_UUID(uuid);
+  COPY_TEMP_SERVICE_UUID(uuid);
   ret = aci_gatt_add_serv(UUID_TYPE_128,  uuid, PRIMARY_SERVICE, 10,
-                          &envSensServHandle);
+                          &tempServHandle);
   if (ret != BLE_STATUS_SUCCESS) goto fail;
   
   /* Temperature Characteristic */
   COPY_TEMP_CHAR_UUID(uuid);  
-  ret =  aci_gatt_add_char(envSensServHandle, UUID_TYPE_128, uuid, 2,
+  ret =  aci_gatt_add_char(tempServHandle, UUID_TYPE_128, uuid, 2,
                            CHAR_PROP_READ, ATTR_PERMISSION_NONE,
                            GATT_NOTIFY_READ_REQ_AND_WAIT_FOR_APPL_RESP,
                            16, 0, &tempCharHandle);
@@ -226,7 +219,7 @@ tBleStatus Add_Environmental_Sensor_Service(void)
   
   uuid16 = CHAR_FORMAT_DESC_UUID;
   
-  ret = aci_gatt_add_char_desc(envSensServHandle,
+  ret = aci_gatt_add_char_desc(tempServHandle,
                                tempCharHandle,
                                UUID_TYPE_16,
                                (uint8_t *)&uuid16, 
@@ -244,7 +237,7 @@ tBleStatus Add_Environmental_Sensor_Service(void)
   /* Pressure Characteristic */
   if(1){ //FIXME
     COPY_PRESS_CHAR_UUID(uuid);  
-    ret =  aci_gatt_add_char(envSensServHandle, UUID_TYPE_128, uuid, 3,
+    ret =  aci_gatt_add_char(tempServHandle, UUID_TYPE_128, uuid, 3,
                              CHAR_PROP_READ, ATTR_PERMISSION_NONE,
                              GATT_NOTIFY_READ_REQ_AND_WAIT_FOR_APPL_RESP,
                              16, 0, &pressCharHandle);
@@ -258,7 +251,7 @@ tBleStatus Add_Environmental_Sensor_Service(void)
     
     uuid16 = CHAR_FORMAT_DESC_UUID;
     
-    ret = aci_gatt_add_char_desc(envSensServHandle,
+    ret = aci_gatt_add_char_desc(tempServHandle,
                                  pressCharHandle,
                                  UUID_TYPE_16,
                                  (uint8_t *)&uuid16, 
@@ -276,7 +269,7 @@ tBleStatus Add_Environmental_Sensor_Service(void)
   /* Humidity Characteristic */
   if(1){   //FIXME
     COPY_HUMIDITY_CHAR_UUID(uuid);  
-    ret =  aci_gatt_add_char(envSensServHandle, UUID_TYPE_128, uuid, 2,
+    ret =  aci_gatt_add_char(tempServHandle, UUID_TYPE_128, uuid, 2,
                              CHAR_PROP_READ, ATTR_PERMISSION_NONE,
                              GATT_NOTIFY_READ_REQ_AND_WAIT_FOR_APPL_RESP,
                              16, 0, &humidityCharHandle);
@@ -290,7 +283,7 @@ tBleStatus Add_Environmental_Sensor_Service(void)
     
     uuid16 = CHAR_FORMAT_DESC_UUID;
     
-    ret = aci_gatt_add_char_desc(envSensServHandle,
+    ret = aci_gatt_add_char_desc(tempServHandle,
                                  humidityCharHandle,
                                  UUID_TYPE_16,
                                  (uint8_t *)&uuid16, 
@@ -305,11 +298,11 @@ tBleStatus Add_Environmental_Sensor_Service(void)
                                  &descHandle);
     if (ret != BLE_STATUS_SUCCESS) goto fail;
   } 
-  PRINTF("Service ENV_SENS added. Handle 0x%04X, TEMP Charac handle: 0x%04X, PRESS Charac handle: 0x%04X, HUMID Charac handle: 0x%04X\n",envSensServHandle, tempCharHandle, pressCharHandle, humidityCharHandle);	
+  PRINTF("Service TEMP added. Handle 0x%04X, TEMP Charac handle: 0x%04X, PRESS Charac handle: 0x%04X, HUMID Charac handle: 0x%04X\n",tempServHandle, tempCharHandle, pressCharHandle, humidityCharHandle);	
   return BLE_STATUS_SUCCESS; 
   
 fail:
-  PRINTF("Error while adding ENV_SENS service.\n");
+  PRINTF("Error while adding TEMP service.\n");
   return BLE_STATUS_ERROR ;
   
 }
@@ -323,7 +316,7 @@ tBleStatus Temp_Update(int16_t temp)
 {  
   tBleStatus ret;
   
-  ret = aci_gatt_update_char_value(envSensServHandle, tempCharHandle, 0, 2,
+  ret = aci_gatt_update_char_value(tempServHandle, tempCharHandle, 0, 2,
                                    (uint8_t*)&temp);
   
   if (ret != BLE_STATUS_SUCCESS){
@@ -343,7 +336,7 @@ tBleStatus Press_Update(int32_t press)
 {  
   tBleStatus ret;
   
-  ret = aci_gatt_update_char_value(envSensServHandle, pressCharHandle, 0, 3,
+  ret = aci_gatt_update_char_value(tempServHandle, pressCharHandle, 0, 3,
                                    (uint8_t*)&press);
   
   if (ret != BLE_STATUS_SUCCESS){
@@ -363,7 +356,7 @@ tBleStatus Humidity_Update(uint16_t humidity)
 {  
   tBleStatus ret;
   
-  ret = aci_gatt_update_char_value(envSensServHandle, humidityCharHandle, 0, 2,
+  ret = aci_gatt_update_char_value(tempServHandle, humidityCharHandle, 0, 2,
                                    (uint8_t*)&humidity);
   
   if (ret != BLE_STATUS_SUCCESS){

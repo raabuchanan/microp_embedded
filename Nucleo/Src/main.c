@@ -236,12 +236,12 @@ int main(void)
   else
     PRINTF("Error while adding Acc service.\n");
   
-  ret = Add_Environmental_Sensor_Service();
+  ret = Add_Temperature_Service();
   
   if(ret == BLE_STATUS_SUCCESS)
-    PRINTF("Environmental Sensor service added successfully.\n");
+    PRINTF("Temperature service added successfully.\n");
   else
-    PRINTF("Error while adding Environmental Sensor service.\n");
+    PRINTF("Error while adding Temperature service.\n");
 
 
   /* Set output power level */
