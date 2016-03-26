@@ -94,10 +94,9 @@ typedef int i32_t;
  * @brief Structure containing acceleration value (in mg) of each axis.
  */
 typedef struct {
-  i32_t AXIS_X;
-  i32_t AXIS_Y;
-  i32_t AXIS_Z;
-} AxesRaw_t;
+  i32_t ROLL;
+  i32_t PITCH;
+} Angles_t;
 /**
  * @}
  */
@@ -106,7 +105,7 @@ typedef struct {
  *  @{
  */
 tBleStatus Add_Acc_Service(void);
-tBleStatus Acc_Update(AxesRaw_t *data);
+tBleStatus Acc_Update(Angles_t *data);
 tBleStatus Add_Temperature_Service(void);
 void       setConnectable(void);
 void       enableNotification(void);

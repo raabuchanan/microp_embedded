@@ -80,7 +80,7 @@
 /* Private variables ---------------------------------------------------------*/
 extern volatile uint8_t set_connectable;
 extern volatile int connected;
-extern AxesRaw_t axes_data;
+extern Angles_t axes_data;
 uint8_t bnrg_expansion_board = IDB04A1; /* at startup, suppose the X-NUCLEO-IDB04A1 is used */
 /**
  * @}
@@ -90,7 +90,7 @@ uint8_t bnrg_expansion_board = IDB04A1; /* at startup, suppose the X-NUCLEO-IDB0
  * @{
  */
 /* Private function prototypes -----------------------------------------------*/
-void User_Process(AxesRaw_t* p_axes);
+void User_Process(Angles_t* p_axes);
 /**
  * @}
  */
@@ -261,7 +261,7 @@ int main(void)
  * @param  AxesRaw_t* p_axes
  * @retval None
  */
-void User_Process(AxesRaw_t* p_axes)
+void User_Process(Angles_t* p_axes)
 {
   if(set_connectable){
     setConnectable();
@@ -278,9 +278,9 @@ void User_Process(AxesRaw_t* p_axes)
     if(connected)
     {
       /* Update acceleration data */
-      p_axes->AXIS_X += 1;
-      p_axes->AXIS_Y -= 1;
-      p_axes->AXIS_Z += 2;
+      p_axes->ROLL += 1;
+      p_axes->PITCH -= 1;
+
       //PRINTF("ACC: X=%6d Y=%6d Z=%6d\r\n", p_axes->AXIS_X, p_axes->AXIS_Y, p_axes->AXIS_Z);
       Acc_Update(p_axes);
     }

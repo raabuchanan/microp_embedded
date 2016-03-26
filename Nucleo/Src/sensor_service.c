@@ -56,9 +56,9 @@ volatile int connected = FALSE;
 volatile uint8_t set_connectable = 1;
 volatile uint16_t connection_handle = 0;
 volatile uint8_t notification_enabled = FALSE;
-volatile AxesRaw_t axes_data = {0, 0, 0};
+volatile Angles_t axes_data = {90, 90};
 uint16_t sampleServHandle, TXCharHandle, RXCharHandle;
-uint16_t accServHandle, freeFallCharHandle, accCharHandle;
+uint16_t accServHandle, rollCharHandle, pitchCharHandle;
 uint16_t tempServHandle, tempCharHandle;
 
 /**
@@ -79,8 +79,8 @@ do {\
 
 
 #define COPY_ACC_SERVICE_UUID(uuid_struct)  	COPY_UUID_128(uuid_struct,0x02,0x36,0x6e,0x80, 0xcf,0x3a, 0x11,0xe1, 0x9a,0xb4, 0x00,0x02,0xa5,0xd5,0xc5,0x1b)
-#define COPY_FREE_FALL_UUID(uuid_struct)    	COPY_UUID_128(uuid_struct,0xe2,0x3e,0x78,0xa0, 0xcf,0x4a, 0x11,0xe1, 0x8f,0xfc, 0x00,0x02,0xa5,0xd5,0xc5,0x1b)
-#define COPY_ACC_UUID(uuid_struct)          	COPY_UUID_128(uuid_struct,0x34,0x0a,0x1b,0x80, 0xcf,0x4b, 0x11,0xe1, 0xac,0x36, 0x00,0x02,0xa5,0xd5,0xc5,0x1b)
+#define COPY_ROLL_CHAR_UUID(uuid_struct)    	COPY_UUID_128(uuid_struct,0xe2,0x3e,0x78,0xa0, 0xcf,0x4a, 0x11,0xe1, 0x8f,0xfc, 0x00,0x02,0xa5,0xd5,0xc5,0x1b)
+#define COPY_PITCH_CHAR_UUID(uuid_struct)     COPY_UUID_128(uuid_struct,0x34,0x0a,0x1b,0x80, 0xcf,0x4b, 0x11,0xe1, 0xac,0x36, 0x00,0x02,0xa5,0xd5,0xc5,0x1b)
 
 #define COPY_TEMP_SERVICE_UUID(uuid_struct)  	COPY_UUID_128(uuid_struct,0x42,0x82,0x1a,0x40, 0xe4,0x77, 0x11,0xe2, 0x82,0xd0, 0x00,0x02,0xa5,0xd5,0xc5,0x1b)
 #define COPY_TEMP_CHAR_UUID(uuid_struct)      COPY_UUID_128(uuid_struct,0xa3,0x2e,0x55,0x20, 0xe4,0x77, 0x11,0xe2, 0xa9,0xe3, 0x00,0x02,0xa5,0xd5,0xc5,0x1b)
@@ -108,25 +108,27 @@ tBleStatus Add_Acc_Service(void)
   uint8_t uuid[16];
   
   COPY_ACC_SERVICE_UUID(uuid);
-  ret = aci_gatt_add_serv(UUID_TYPE_128,  uuid, PRIMARY_SERVICE, 7,
+  ret = aci_gatt_add_serv(UUID_TYPE_128,  uuid, PRIMARY_SERVICE, 8,
                           &accServHandle);
   if (ret != BLE_STATUS_SUCCESS) goto fail;    
   
-  COPY_FREE_FALL_UUID(uuid);
-  ret =  aci_gatt_add_char(accServHandle, UUID_TYPE_128, uuid, 1,
-                           CHAR_PROP_NOTIFY, ATTR_PERMISSION_NONE, 0,
-                           16, 0, &freeFallCharHandle);
-  if (ret != BLE_STATUS_SUCCESS) goto fail;
-  
-  COPY_ACC_UUID(uuid);  
-  ret =  aci_gatt_add_char(accServHandle, UUID_TYPE_128, uuid, 6,
+  COPY_ROLL_CHAR_UUID(uuid);
+  ret =  aci_gatt_add_char(accServHandle, UUID_TYPE_128, uuid, 4,
                            CHAR_PROP_NOTIFY|CHAR_PROP_READ,
                            ATTR_PERMISSION_NONE,
                            GATT_NOTIFY_READ_REQ_AND_WAIT_FOR_APPL_RESP,
-                           16, 0, &accCharHandle);
+                           16, 0, &rollCharHandle);
   if (ret != BLE_STATUS_SUCCESS) goto fail;
   
-  PRINTF("Service ACC added. Handle 0x%04X, Free fall Charac handle: 0x%04X, Acc Charac handle: 0x%04X\n",accServHandle, freeFallCharHandle, accCharHandle);	
+  COPY_PITCH_CHAR_UUID(uuid);  
+  ret =  aci_gatt_add_char(accServHandle, UUID_TYPE_128, uuid, 4,
+                           CHAR_PROP_NOTIFY|CHAR_PROP_READ,
+                           ATTR_PERMISSION_NONE,
+                           GATT_NOTIFY_READ_REQ_AND_WAIT_FOR_APPL_RESP,
+                           16, 0, &pitchCharHandle);
+  if (ret != BLE_STATUS_SUCCESS) goto fail;
+  
+  PRINTF("Service ACC added. Handle 0x%04X, Roll Charac handle: 0x%04X, Pitch Charac handle: 0x%04X\n", accServHandle, rollCharHandle, pitchCharHandle);	
   return BLE_STATUS_SUCCESS; 
   
 fail:
@@ -136,43 +138,21 @@ fail:
 }
 
 /**
- * @brief  Send a notification for a Free Fall detection.
- *
- * @param  None
- * @retval tBleStatus Status
- */
-tBleStatus Free_Fall_Notify(void)
-{  
-  uint8_t val;
-  tBleStatus ret;
-	
-  val = 0x01;	
-  ret = aci_gatt_update_char_value(accServHandle, freeFallCharHandle, 0, 1,
-                                   &val);
-	
-  if (ret != BLE_STATUS_SUCCESS){
-    PRINTF("Error while updating ACC characteristic.\n") ;
-    return BLE_STATUS_ERROR ;
-  }
-  return BLE_STATUS_SUCCESS;	
-}
-
-/**
  * @brief  Update acceleration characteristic value.
  *
- * @param  Structure containing acceleration value in mg
+ * @param  Structure containing angle values in degrees
  * @retval Status
  */
-tBleStatus Acc_Update(AxesRaw_t *data)
+tBleStatus Acc_Update(Angles_t *data)
 {  
   tBleStatus ret;    
-  uint8_t buff[6];
+  uint8_t buff[4];
     
-  STORE_LE_16(buff,data->AXIS_X);
-  STORE_LE_16(buff+2,data->AXIS_Y);
-  STORE_LE_16(buff+4,data->AXIS_Z);
+  STORE_LE_16(buff,data->ROLL);
+  STORE_LE_16(buff+2,data->PITCH);
 	
-  ret = aci_gatt_update_char_value(accServHandle, accCharHandle, 0, 6, buff);
+  ret = aci_gatt_update_char_value(accServHandle, pitchCharHandle, 0, 4, buff);
+	ret = aci_gatt_update_char_value(accServHandle, rollCharHandle, 0, 4, buff);
 	
   if (ret != BLE_STATUS_SUCCESS){
     PRINTF("Error while updating ACC characteristic.\n") ;
@@ -336,13 +316,16 @@ void GAP_DisconnectionComplete_CB(void)
  */
 void Read_Request_CB(uint16_t handle)
 {  
-  if(handle == accCharHandle + 1){
-    Acc_Update((AxesRaw_t*)&axes_data);
+  if(handle == rollCharHandle + 1){
+    Acc_Update((Angles_t*)&axes_data);
+  }
+  if(handle == pitchCharHandle + 1){
+    Acc_Update((Angles_t*)&axes_data);
   }  
   else if(handle == tempCharHandle + 1){
     int16_t data;
     data = 210 + ((uint64_t)rand()*15)/RAND_MAX; //sensor emulation        
-    Acc_Update((AxesRaw_t*)&axes_data); //FIXME: to overcome issue on Android App
+    Acc_Update((Angles_t*)&axes_data); //FIXME: to overcome issue on Android App
                                         // If the user button is not pressed within
                                         // a short time after the connection,
                                         // a pop-up reports a "No valid characteristics found" error.
