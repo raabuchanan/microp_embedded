@@ -56,7 +56,7 @@ volatile int connected = FALSE;
 volatile uint8_t set_connectable = 1;
 volatile uint16_t connection_handle = 0;
 volatile uint8_t notification_enabled = FALSE;
-volatile Angles_t axes_data = {90, 90};
+volatile Angles_t axes_data = {90.0f, 90.0f};
 uint16_t sampleServHandle, TXCharHandle, RXCharHandle;
 uint16_t accServHandle, rollCharHandle, pitchCharHandle;
 uint16_t tempServHandle, tempCharHandle;
@@ -85,9 +85,23 @@ do {\
 #define COPY_TEMP_SERVICE_UUID(uuid_struct)  	COPY_UUID_128(uuid_struct,0x03,0x36,0x6e,0x80, 0xcf,0x3a, 0x11,0xe1, 0x9a,0xb4, 0x00,0x02,0xa5,0xd5,0xc5,0x1b)
 #define COPY_TEMP_CHAR_UUID(uuid_struct)      COPY_UUID_128(uuid_struct,0x04,0x36,0x6e,0x80, 0xcf,0x3a, 0x11,0xe1, 0x9a,0xb4, 0x00,0x02,0xa5,0xd5,0xc5,0x1b)
 
+#define COPY_DOUBLETAP_SERVICE_UUID(uuid_struct) COPY_UUID_128(uuid_struct,0x05,0x36,0x6e,0x80, 0xcf,0x3a, 0x11,0xe1, 0x9a,0xb4, 0x00,0x02,0xa5,0xd5,0xc5,0x1b)
+#define COPY_DOUBLETAP_CHAR_UUID(uuid_struct)    COPY_UUID_128(uuid_struct,0x06,0x36,0x6e,0x80, 0xcf,0x3a, 0x11,0xe1, 0x9a,0xb4, 0x00,0x02,0xa5,0xd5,0xc5,0x1b)
+
+#define COPY_LED_SERVICE_UUID(uuid_struct)  			COPY_UUID_128(uuid_struct,0x07,0x36,0x6e,0x80, 0xcf,0x3a, 0x11,0xe1, 0x9a,0xb4, 0x00,0x02,0xa5,0xd5,0xc5,0x1b)
+#define COPY_SPEED_CHAR_UUID(uuid_struct)      		COPY_UUID_128(uuid_struct,0x08,0x36,0x6e,0x80, 0xcf,0x3a, 0x11,0xe1, 0x9a,0xb4, 0x00,0x02,0xa5,0xd5,0xc5,0x1b)
+#define COPY_INTENSITY_SERVICE_UUID(uuid_struct)  COPY_UUID_128(uuid_struct,0x09,0x36,0x6e,0x80, 0xcf,0x3a, 0x11,0xe1, 0x9a,0xb4, 0x00,0x02,0xa5,0xd5,0xc5,0x1b)
+
 /* Store Value into a buffer in Little Endian Format */
 #define STORE_LE_16(buf, val)    ( ((buf)[0] =  (uint8_t) (val)    ) , \
                                    ((buf)[1] =  (uint8_t) (val>>8) ) )
+
+#define STORE_LE_32(buf, val)    ( ((buf)[0] =  (uint8_t) (val)    ) , \
+                                   ((buf)[1] =  (uint8_t) (val>>8) ) , \
+																	 ((buf)[2] =  (uint8_t) (val>>16) ) , \
+																	 ((buf)[3] =  (uint8_t) (val>>24) ) )
+
+
 /**
  * @}
  */
@@ -146,13 +160,16 @@ fail:
 tBleStatus Acc_Update(Angles_t *data)
 {  
   tBleStatus ret;    
-  uint8_t buff[4];
+  uint8_t buff[8];
     
-  STORE_LE_16(buff,data->ROLL);
-  STORE_LE_16(buff+2,data->PITCH);
+  STORE_LE_32(buff, data->roll.i);
+  STORE_LE_32(buff+4, data->pitch.i);
 	
-  ret = aci_gatt_update_char_value(accServHandle, pitchCharHandle, 0, 4, buff);
-	ret = aci_gatt_update_char_value(accServHandle, rollCharHandle, 0, 4, buff);
+	PRINTF("roll int: %d, float: %f\n", data->roll.i, data->roll.f);
+	PRINTF("pitch int: %d, float: %f\n", data->pitch.i, data->pitch.f);
+	
+  ret = aci_gatt_update_char_value(accServHandle, rollCharHandle, 0, 4, buff);
+	ret = aci_gatt_update_char_value(accServHandle, pitchCharHandle, 0, 4, buff+4);
 	
   if (ret != BLE_STATUS_SUCCESS){
     PRINTF("Error while updating ACC characteristic.\n") ;

@@ -90,13 +90,22 @@
  */
 typedef int i32_t;
 
+/**
+ * @brief Union containing the integer representation (32-bit IEEE-754) of a float
+ */
+typedef union {
+	float f;
+  i32_t i;
+} f16_u;
+
 /** 
- * @brief Structure containing acceleration value (in mg) of each axis.
+ * @brief Structure containing roll and pitch angle values (in degrees)
  */
 typedef struct {
-  i32_t ROLL;
-  i32_t PITCH;
+  f16_u roll;
+  f16_u pitch;
 } Angles_t;
+
 /**
  * @}
  */

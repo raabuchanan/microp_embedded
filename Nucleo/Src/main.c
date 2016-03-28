@@ -275,15 +275,14 @@ void User_Process(Angles_t* p_axes)
     
     //BSP_LED_Toggle(LED2); //used for debugging (BSP_LED_Init() above must be also enabled)
     
-    if(connected)
-    {
+//    if(connected)
+//    {
       /* Update acceleration data */
-      p_axes->ROLL += 1;
-      p_axes->PITCH -= 1;
+      p_axes->roll.f += 1.5f;
+      p_axes->pitch.f -= 2.5f;
 
-      //PRINTF("ACC: X=%6d Y=%6d Z=%6d\r\n", p_axes->AXIS_X, p_axes->AXIS_Y, p_axes->AXIS_Z);
       Acc_Update(p_axes);
-    }
+//    }
   }
 }
 
