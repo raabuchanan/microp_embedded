@@ -120,8 +120,8 @@ void User_Process(Angles_t* p_axes);
  */
 int main(void)
 {
-  const char *name = "Group9";
-  uint8_t SERVER_BDADDR[] = {0x12, 0x34, 0x00, 0xE1, 0x80, 0x03};
+  const char *name = "BLE-G09";
+  uint8_t SERVER_BDADDR[] = {0x09, 0x34, 0x00, 0xE1, 0x80, 0x03};
   uint8_t bdaddr[BDADDR_SIZE];
   uint16_t service_handle, dev_name_char_handle, appearance_char_handle;
   
