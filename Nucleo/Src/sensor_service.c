@@ -56,7 +56,7 @@ volatile int connected = FALSE;
 volatile uint8_t set_connectable = 1;
 volatile uint16_t connection_handle = 0;
 volatile uint8_t notification_enabled = FALSE;
-volatile Angles_t axes_data = {90.0f, 90.0f};
+volatile Angles_t angles_data = {90.0f, 90.0f};
 uint16_t sampleServHandle, TXCharHandle, RXCharHandle;
 uint16_t accServHandle, rollCharHandle, pitchCharHandle;
 uint16_t tempServHandle, tempCharHandle;
@@ -334,15 +334,15 @@ void GAP_DisconnectionComplete_CB(void)
 void Read_Request_CB(uint16_t handle)
 {  
   if(handle == rollCharHandle + 1){
-    Acc_Update((Angles_t*)&axes_data);
+    Acc_Update((Angles_t*)&angles_data);
   }
   if(handle == pitchCharHandle + 1){
-    Acc_Update((Angles_t*)&axes_data);
+    Acc_Update((Angles_t*)&angles_data);
   }  
   else if(handle == tempCharHandle + 1){
     int16_t data;
     data = 210 + ((uint64_t)rand()*15)/RAND_MAX; //sensor emulation        
-    Acc_Update((Angles_t*)&axes_data); //FIXME: to overcome issue on Android App
+    Acc_Update((Angles_t*)&angles_data); //FIXME: to overcome issue on Android App
                                         // If the user button is not pressed within
                                         // a short time after the connection,
                                         // a pop-up reports a "No valid characteristics found" error.

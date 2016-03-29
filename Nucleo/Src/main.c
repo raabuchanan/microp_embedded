@@ -80,7 +80,7 @@
 /* Private variables ---------------------------------------------------------*/
 extern volatile uint8_t set_connectable;
 extern volatile int connected;
-extern Angles_t axes_data;
+extern Angles_t angles_data;
 uint8_t bnrg_expansion_board = IDB04A1; /* at startup, suppose the X-NUCLEO-IDB04A1 is used */
 /**
  * @}
@@ -250,18 +250,18 @@ int main(void)
   while(1)
   {
     HCI_Process();
-    User_Process(&axes_data);
+    User_Process(&angles_data);
   }
 }
 
 /**
  * @brief  Process user input (i.e. pressing the USER button on Nucleo board)
- *         and send the updated acceleration data to the remote client.
+ *         and send the updated angle data to the remote client.
  *
- * @param  AxesRaw_t* p_axes
+ * @param  Angle_t* anlges
  * @retval None
  */
-void User_Process(Angles_t* p_axes)
+void User_Process(Angles_t* angles)
 {
   if(set_connectable){
     setConnectable();
@@ -278,10 +278,10 @@ void User_Process(Angles_t* p_axes)
 //    if(connected)
 //    {
       /* Update acceleration data */
-      p_axes->roll.f += 1.5f;
-      p_axes->pitch.f -= 2.5f;
+      angles->roll.f += 1.5f;
+      angles->pitch.f -= 2.5f;
 
-      Acc_Update(p_axes);
+      Acc_Update(angles);
 //    }
   }
 }
