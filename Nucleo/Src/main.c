@@ -140,6 +140,9 @@ int main(void)
    *  - Low Level Initialization
    */
   HAL_Init();
+	
+	/* Configure LED2 */
+	BSP_LED_Init(LED2);  //TODO: Integrate with Discovery board
   
   /* Configure the User Button in GPIO Mode */
   BSP_PB_Init(BUTTON_KEY, BUTTON_MODE_GPIO);
@@ -243,6 +246,15 @@ int main(void)
   else
     PRINTF("Error while adding Temperature service.\n");
 
+	/* Instantiate LED Button Service with one characteristic:
+	 * - LED characteristic (Readable and Writable)
+	 */  
+  ret = Add_LED_Service();
+
+  if(ret == BLE_STATUS_SUCCESS)
+    PRINTF("LED service added successfully.\n");
+  else
+    PRINTF("Error while adding LED service.\n");  
 
   /* Set output power level */
   ret = aci_hal_set_tx_power_level(1,4);
@@ -273,7 +285,7 @@ void User_Process(Angles_t* angles)
   {
     while (BSP_PB_GetState(BUTTON_KEY) == RESET);
     
-    //BSP_LED_Toggle(LED2); //used for debugging (BSP_LED_Init() above must be also enabled)
+      BSP_LED_Toggle(LED2); //used for debugging (BSP_LED_Init() above must be also enabled)
     
 //    if(connected)
 //    {

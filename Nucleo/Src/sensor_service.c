@@ -57,9 +57,11 @@ volatile uint8_t set_connectable = 1;
 volatile uint16_t connection_handle = 0;
 volatile uint8_t notification_enabled = FALSE;
 volatile Angles_t angles_data = {90.0f, 90.0f};
-uint16_t sampleServHandle, TXCharHandle, RXCharHandle;
 uint16_t accServHandle, rollCharHandle, pitchCharHandle;
 uint16_t tempServHandle, tempCharHandle;
+uint16_t ledServHandle, ledSpeedCharHandle, ledIntensityCharHandle;
+uint8_t ledState = 0;
+extern uint8_t bnrg_expansion_board;
 
 /**
  * @}
@@ -89,8 +91,8 @@ do {\
 #define COPY_DOUBLETAP_CHAR_UUID(uuid_struct)    COPY_UUID_128(uuid_struct,0x06,0x36,0x6e,0x80, 0xcf,0x3a, 0x11,0xe1, 0x9a,0xb4, 0x00,0x02,0xa5,0xd5,0xc5,0x1b)
 
 #define COPY_LED_SERVICE_UUID(uuid_struct)  			COPY_UUID_128(uuid_struct,0x07,0x36,0x6e,0x80, 0xcf,0x3a, 0x11,0xe1, 0x9a,0xb4, 0x00,0x02,0xa5,0xd5,0xc5,0x1b)
-#define COPY_SPEED_CHAR_UUID(uuid_struct)      		COPY_UUID_128(uuid_struct,0x08,0x36,0x6e,0x80, 0xcf,0x3a, 0x11,0xe1, 0x9a,0xb4, 0x00,0x02,0xa5,0xd5,0xc5,0x1b)
-#define COPY_INTENSITY_SERVICE_UUID(uuid_struct)  COPY_UUID_128(uuid_struct,0x09,0x36,0x6e,0x80, 0xcf,0x3a, 0x11,0xe1, 0x9a,0xb4, 0x00,0x02,0xa5,0xd5,0xc5,0x1b)
+#define COPY_LED_SPEED_CHAR_UUID(uuid_struct)      		COPY_UUID_128(uuid_struct,0x08,0x36,0x6e,0x80, 0xcf,0x3a, 0x11,0xe1, 0x9a,0xb4, 0x00,0x02,0xa5,0xd5,0xc5,0x1b)
+#define COPY_LED_INTENSITY_CHAR_UUID(uuid_struct)  COPY_UUID_128(uuid_struct,0x09,0x36,0x6e,0x80, 0xcf,0x3a, 0x11,0xe1, 0x9a,0xb4, 0x00,0x02,0xa5,0xd5,0xc5,0x1b)
 
 /* Store Value into a buffer in Little Endian Format */
 #define STORE_LE_16(buf, val)    ( ((buf)[0] =  (uint8_t) (val)    ) , \
@@ -261,6 +263,63 @@ tBleStatus Temp_Update(i32_t temp)
 	
 }
 
+
+/*
+ * @brief  Add LED button service using a vendor specific profile.
+ * @param  None
+ * @retval Status
+ */
+tBleStatus Add_LED_Service(void)
+{
+  tBleStatus ret;
+  uint8_t uuid[16];
+  
+  /* copy "LED service UUID" defined above to 'uuid' local variable */
+  COPY_LED_SERVICE_UUID(uuid);
+  /* 
+   * now add "LED service" to GATT server, service handle is returned
+   * via 'ledServHandle' parameter of aci_gatt_add_serv() API. 
+  */  
+  ret = aci_gatt_add_serv(UUID_TYPE_128, uuid, PRIMARY_SERVICE, 7,
+                          &ledServHandle);
+  if (ret != BLE_STATUS_SUCCESS) goto fail;    
+  
+  /* copy "LED speed characteristic UUID" defined above to 'uuid' local variable */  
+  COPY_LED_SPEED_CHAR_UUID(uuid);
+  /* 
+   * now add "LED speed characteristic" to LED service, characteristic handle 
+   * is returned via 'ledSpeedCharHandle' parameter of aci_gatt_add_char() API.
+   * This characteristic is writable, as specified by 'CHAR_PROP_WRITE' parameter.
+  */   
+  ret =  aci_gatt_add_char(ledServHandle, UUID_TYPE_128, uuid, 4,
+                           CHAR_PROP_WRITE | CHAR_PROP_WRITE_WITHOUT_RESP, ATTR_PERMISSION_NONE, GATT_NOTIFY_ATTRIBUTE_WRITE,
+                           16, 1, &ledSpeedCharHandle);
+  if (ret != BLE_STATUS_SUCCESS) goto fail;  
+  
+  PRINTF("Service LED BUTTON added. Handle 0x%04X, LED speed Charac handle: 0x%04X\n",ledServHandle, ledSpeedCharHandle);	
+  return BLE_STATUS_SUCCESS; 
+  
+fail:
+  PRINTF("Error while adding LED service.\n");
+  return BLE_STATUS_ERROR;
+}
+
+/**
+ * @brief  This function is called attribute value corresponding to 
+ *         ledButtonCharHandle characteristic gets modified.
+ * @param  Handle of the attribute
+ * @param  Size of the modified attribute data
+ * @param  Pointer to the modified attribute data
+ * @retval None
+ */
+void Attribute_Modified_CB(uint16_t handle, uint8_t data_length, uint8_t *att_data)
+{
+  /* If GATT client has modified 'LED speed characteristic' value, toggle LED2 */
+  if(handle == ledSpeedCharHandle + 1){      
+      BSP_LED_Toggle(LED2);
+  }
+}
+
 /**
  * @brief  Puts the device in connectable mode.
  *         If you want to specify a UUID list in the advertising data, those data can
@@ -401,16 +460,29 @@ void HCI_Event_CB(void *pckt)
     {
       evt_blue_aci *blue_evt = (void*)event_pckt->data;
       switch(blue_evt->ecode){
+				case EVT_BLUE_GATT_ATTRIBUTE_MODIFIED:         
+					{
+						/* this callback is invoked when a GATT attribute is modified
+						extract callback data and pass to suitable handler function */
+						if (bnrg_expansion_board == IDB05A1) {
+							evt_gatt_attr_modified_IDB05A1 *evt = (evt_gatt_attr_modified_IDB05A1*)blue_evt->data;
+							Attribute_Modified_CB(evt->attr_handle, evt->data_length, evt->att_data); 
+						}
+						else {
+							evt_gatt_attr_modified_IDB04A1 *evt = (evt_gatt_attr_modified_IDB04A1*)blue_evt->data;
+							Attribute_Modified_CB(evt->attr_handle, evt->data_length, evt->att_data); 
+						}                       
+					}
+					break; 
 
 
-
-      case EVT_BLUE_GATT_READ_PERMIT_REQ:
-        {
-          evt_gatt_read_permit_req *pr = (void*)blue_evt->data;                    
-          Read_Request_CB(pr->attr_handle);                    
-        }
-        break;
-      }
+				case EVT_BLUE_GATT_READ_PERMIT_REQ:
+					{
+						evt_gatt_read_permit_req *pr = (void*)blue_evt->data;                    
+						Read_Request_CB(pr->attr_handle);                    
+					}
+					break;
+				}
     }
     break;
   }    
