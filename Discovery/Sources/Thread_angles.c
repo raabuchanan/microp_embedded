@@ -21,6 +21,27 @@ void Thread_angles (void const *argument);                  /** thread function 
 osThreadId tid_Thread_angles;                               /** thread id */
 osThreadDef(Thread_angles, osPriorityBelowNormal, 1, 864);  /** thread definition with below normal priority and a stack size of 864 = 1.5 * 576 (max observed stack usage) */
 
+int readingIndex = 0;
+int i = 0;
+int j = 0;
+int flag = 0;
+int doubleTap = 0;
+int updateAvg = 0;
+int cyclePassed = 0;
+int beginCountdown = 0;
+float spikingAverage[] = {1000,1000,1000,1000,1000,1000,1000,1000,1000,1000};
+float globalAverageZ[] = {1000,1000,1000,1000,1000,1000,1000,1000,1000,1000};
+float globalAverageX[] = {1000,1000,1000,1000,1000,1000,1000,1000,1000,1000};
+float globalAverageY[] = {1000,1000,1000,1000,1000,1000,1000,1000,1000,1000};
+
+float average;
+float test;//output the zaxis
+float previousAvgZ;
+float previousAvgX;
+float previousAvgY;
+float runningAvgZ;//output average with high value included
+float runningAvgX;//output average with high value included
+float runningAvgY;//output average with high value included
 float pitch /** the pich angle */, roll 										/** the roll angle */;
 kalman_state xacc_state = {5,100,0,0,0};       							/** Kalman state variables for the X Acceleration */
 kalman_state yacc_state = {5,100,0,0,0};        						/** Kalman state variables for the Y Acceleration */
@@ -67,7 +88,83 @@ int start_Thread_angles (void) {
 			filtered_acc[0] = kalmanfilter_c(acc[0],&xacc_state);
 			filtered_acc[1] = kalmanfilter_c(acc[1],&yacc_state);
 			filtered_acc[2] = kalmanfilter_c(acc[2],&zacc_state);
+			/*************************************
+				         Temporary init
+			**************************************/
+			if(beginCountdown)
+				cyclePassed++;
+			test = filtered_acc[2];
+			if(j<50)
+			{
+				spikingAverage[readingIndex++%10] = filtered_acc[2];
+				j++;
+			}
+			else
+			{			
+				//
+				globalAverageX[readingIndex%10] = filtered_acc[0];
+				globalAverageY[readingIndex%10] = filtered_acc[1];
+				globalAverageZ[readingIndex++%10] = filtered_acc[2];
 
+				for(i = 0,average = 0,runningAvgZ = 0, runningAvgX = 0, runningAvgY = 0; i<10 ;i++)
+				{
+					average += spikingAverage[i];
+					runningAvgX += globalAverageX[i];
+					runningAvgY += globalAverageY[i];
+					runningAvgZ += globalAverageZ[i];
+				}
+				average /= 10;	
+				runningAvgZ /= 10;
+				runningAvgX /= 10;
+				runningAvgY /= 10;
+				
+				//Waits for stable value of the average 
+				//to make sure the board is not moving
+				if(fabs(previousAvgZ-runningAvgZ)<5 && 
+					 fabs(previousAvgX-runningAvgX)<5 &&
+					 fabs(previousAvgY-runningAvgY)<5)
+				{
+					//Values safe to use 
+					for(i = 0; i<10 ;i++)
+						//Stores all values from the gloabl running average 
+						//to the local average to detect spike
+						spikingAverage[i] = globalAverageZ[i];
+					//unlock the flag
+					updateAvg = 1;
+				}
+				else 
+					//locak the flag
+					updateAvg = 0;
+				
+				//Runs only when boad is stable ie. When it is not moving
+				if(updateAvg)
+				{
+					//if tap detected
+					if(fabs(filtered_acc[2] - average)>10 && fabs(filtered_acc[2] - average)<50)
+					{
+						flag++;	
+						beginCountdown = 1;
+						if(flag >= 4)
+						{
+							doubleTap++;
+							flag = 0;
+						}
+					}
+					else
+						//Does not include the "spiked" value in the average
+						//calculation
+						spikingAverage[readingIndex++%10] = filtered_acc[2];
+				}		
+				if(cyclePassed > 10)
+				{
+					flag = 0;
+					cyclePassed = 0;
+					beginCountdown = 0;
+				}
+				previousAvgZ = runningAvgZ;
+				previousAvgX = runningAvgX;
+				previousAvgY = runningAvgY;
+			}
 			osMutexWait(pitch_mutex, osWaitForever);
 			pitch = 90 + (180/M_PI)*atan2(filtered_acc[1], sqrt(pow(filtered_acc[0], 2) + pow(filtered_acc[2], 2))); //Pitch in degrees
 			osMutexRelease(pitch_mutex);
