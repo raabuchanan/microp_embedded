@@ -193,13 +193,13 @@ tBleStatus Add_Temperature_Service(void)
   uint16_t descHandle;
   
   COPY_TEMP_SERVICE_UUID(uuid);
-  ret = aci_gatt_add_serv(UUID_TYPE_128,  uuid, PRIMARY_SERVICE, 10,
+  ret = aci_gatt_add_serv(UUID_TYPE_128,  uuid, PRIMARY_SERVICE, 4,
                           &tempServHandle);
   if (ret != BLE_STATUS_SUCCESS) goto fail;
   
   /* Temperature Characteristic */
   COPY_TEMP_CHAR_UUID(uuid);  
-  ret =  aci_gatt_add_char(tempServHandle, UUID_TYPE_128, uuid, 2,
+  ret =  aci_gatt_add_char(tempServHandle, UUID_TYPE_128, uuid, 4,
                            CHAR_PROP_READ, ATTR_PERMISSION_NONE,
                            GATT_NOTIFY_READ_REQ_AND_WAIT_FOR_APPL_RESP,
                            16, 0, &tempCharHandle);
@@ -239,16 +239,20 @@ fail:
 
 /**
  * @brief  Update temperature characteristic value.
- * @param  Temperature in tenths of degree 
+ * @param  Temperature in degrees 
  * @retval Status
  */
-tBleStatus Temp_Update(int16_t temp)
+tBleStatus Temp_Update(i32_t temp)
 {  
   tBleStatus ret;
+	uint8_t buff[4];
+    
+  STORE_LE_32(buff, temp);
   
-  ret = aci_gatt_update_char_value(tempServHandle, tempCharHandle, 0, 2,
-                                   (uint8_t*)&temp);
+  ret = aci_gatt_update_char_value(tempServHandle, tempCharHandle, 0, 4,
+                                   buff);
   
+	PRINTF("temperature int: %d\n", temp);
   if (ret != BLE_STATUS_SUCCESS){
     PRINTF("Error while updating TEMP characteristic.\n") ;
     return BLE_STATUS_ERROR ;
@@ -340,13 +344,13 @@ void Read_Request_CB(uint16_t handle)
     Acc_Update((Angles_t*)&angles_data);
   }  
   else if(handle == tempCharHandle + 1){
-    int16_t data;
-    data = 210 + ((uint64_t)rand()*15)/RAND_MAX; //sensor emulation        
+    f16_u data;
+    data.f = 210.0f + ((uint64_t)rand()*15)/RAND_MAX; //sensor emulation        
     Acc_Update((Angles_t*)&angles_data); //FIXME: to overcome issue on Android App
                                         // If the user button is not pressed within
                                         // a short time after the connection,
                                         // a pop-up reports a "No valid characteristics found" error.
-    Temp_Update(data);
+    Temp_Update(data.i);
   }
   
   //EXIT:
