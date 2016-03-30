@@ -40,7 +40,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "cube_hal.h"
-
+//#include "discovery_interface.h"
 #include "osal.h"
 #include "sensor_service.h"
 #include "debug.h"
@@ -77,14 +77,13 @@
 /** @defgroup MAIN_Private_Variables
  * @{
  */
+ extern void discovery_SPI_init(void);
 /* Private variables ---------------------------------------------------------*/
 extern volatile uint8_t set_connectable;
 extern volatile int connected;
 extern AxesRaw_t axes_data;
 uint8_t bnrg_expansion_board = IDB04A1; /* at startup, suppose the X-NUCLEO-IDB04A1 is used */
-
-SPI_HandleTypeDef SPI_Handle;
-
+extern SPI_HandleTypeDef discoverySPIHandle;
 
 /**
  * @}
@@ -159,29 +158,10 @@ int main(void)
 	/* SYSTEM CLOCK = 32 MHz */
   SystemClock_Config();
 
-		__HAL_RCC_SPI1_CLK_ENABLE();
-	
-	HAL_SPI_MspInit(&SPI_Handle); /* Initialize the SPI low level resources */
-	
-	HAL_SPI_DeInit(&SPI_Handle);
-	SPI_Handle.Instance = SPI1;
-	SPI_Handle.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_4;
-	SPI_Handle.Init.CLKPhase = SPI_PHASE_1EDGE;
-	SPI_Handle.Init.CLKPolarity = SPI_POLARITY_LOW;
-	SPI_Handle.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
-	SPI_Handle.Init.CRCPolynomial = 7;
-	SPI_Handle.Init.DataSize = SPI_DATASIZE_8BIT;
-	SPI_Handle.Init.Direction = SPI_DIRECTION_2LINES;
-	SPI_Handle.Init.FirstBit = SPI_FIRSTBIT_MSB;
-	SPI_Handle.Init.Mode = SPI_MODE_MASTER;
-	SPI_Handle.Init.NSS = SPI_NSS_SOFT;
-	SPI_Handle.Init.TIMode = SPI_TIMODE_DISABLED;
-	if (HAL_SPI_Init(&SPI_Handle) != HAL_OK) {printf ("ERROR: Error in initialising SPI1 \n");};
-
-	__HAL_SPI_ENABLE(&SPI_Handle);
-
   /* Initialize the BlueNRG SPI driver */
   BNRG_SPI_Init();
+	
+	discovery_SPI_init();
   
   /* Initialize the BlueNRG HCI */
   HCI_Init();
@@ -312,7 +292,7 @@ int main(void)
     Update_Time_Characteristics();
 #endif
 		
-		HAL_SPI_Transmit(&SPI_Handle, &data, sizeof(data), 10);
+		HAL_SPI_Transmit(&discoverySPIHandle, &data, sizeof(data), 10);
 		
 		data = data + 1;
 		

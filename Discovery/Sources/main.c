@@ -13,6 +13,7 @@
 #include "cmsis_os.h"                   // ARM::CMSIS:RTOS:Keil RTX
 #include "RTE_Components.h"             // Component selection
 #include "main.h"
+#include "nucleo_interface.h"
 
 extern void initializeADC_IO			(void);
 extern void start_Thread_sevenseg			(void);
@@ -26,6 +27,7 @@ extern osThreadId tid_Thread_temperature;
 extern osThreadId tid_Thread_sevenseg;
 extern osThreadId tid_Thread_keypad;
 extern osThreadId tid_Thread_angles;
+extern SPI_HandleTypeDef nucleoSPIHandle;
 
 TIM_HandleTypeDef* timHandleTypeDef;            /** timer handler to be initialized */
 osMutexId temp_mutex;														/** temperature mutex */
@@ -90,13 +92,13 @@ int main (void) {
 
   HAL_Init();                               /* Initialize the HAL Library     */
 	
-
-	
   SystemClock_Config();                     /* Configure the System Clock     */
 	
 	/* Initialize GPIOs */
 	initGPIOs();
 
+	nucleo_SPI_init();
+	
 	/* Initialize the ADC IO */
 	initializeADC_IO();
 
@@ -113,33 +115,10 @@ int main (void) {
 	//start_Thread_sevenseg();
 	//start_Thread_keypad();
   
-	osKernelStart();  /* start thread execution         */
-	
-	__HAL_RCC_SPI1_CLK_ENABLE();
-	
-	HAL_SPI_MspInit(&SPI_Handle); /* Initialize the SPI low level resources */
-	
-	HAL_SPI_DeInit(&SPI_Handle);
-	
-	SPI_Handle.Instance = SPI2;
-	SPI_Handle.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_4;
-	SPI_Handle.Init.CLKPhase = SPI_PHASE_1EDGE;
-	SPI_Handle.Init.CLKPolarity = SPI_POLARITY_LOW;
-	SPI_Handle.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
-	SPI_Handle.Init.CRCPolynomial = 7;
-	SPI_Handle.Init.DataSize = SPI_DATASIZE_8BIT;
-	SPI_Handle.Init.Direction = SPI_DIRECTION_2LINES;
-	SPI_Handle.Init.FirstBit = SPI_FIRSTBIT_MSB;
-	SPI_Handle.Init.Mode = SPI_MODE_SLAVE;
-	SPI_Handle.Init.NSS = SPI_NSS_SOFT;
-	SPI_Handle.Init.TIMode = SPI_TIMODE_DISABLED;
-	
-	HAL_SPI_Init(&SPI_Handle);
-
-	__HAL_SPI_ENABLE(&SPI_Handle);
+	osKernelStart();  /* start thread execution*/
 	
 	while(1){
-	HAL_SPI_Receive (&SPI_Handle, &data, 0x01, 10);
+	HAL_SPI_Receive (&nucleoSPIHandle, &data, 0x01, 10);
 	}
 	
 }
