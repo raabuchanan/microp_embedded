@@ -48,8 +48,8 @@ float runningAvgY;//output average with high value included
 extern float filtered_acc[3];
 extern osMutexId pitch_mutex;																/** pitch mutex */
 extern osMutexId roll_mutex;															  /** roll mutex */
-osMutexDef(pitch_mutex);																		
-osMutexDef(roll_mutex);
+//osMutexDef(pitch_mutex);																		
+//osMutexDef(roll_mutex);
 
 /**----------------------------------------------------------------------------
  *      Create the thread within RTOS context

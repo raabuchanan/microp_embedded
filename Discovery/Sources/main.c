@@ -108,7 +108,7 @@ int main (void) {
 	/* Start the threads */
 	start_Thread_angles();
 	start_Thread_temperature();
-	start_Thread_doubleTap();
+	//start_Thread_doubleTap();
 	//start_Thread_sevenseg();
 	//start_Thread_keypad();
   

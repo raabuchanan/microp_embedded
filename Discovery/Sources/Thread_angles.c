@@ -21,7 +21,7 @@ void Thread_angles (void const *argument);                  /** thread function 
 osThreadId tid_Thread_angles;                               /** thread id */
 osThreadDef(Thread_angles, osPriorityBelowNormal, 1, 864);  /** thread definition with below normal priority and a stack size of 864 = 1.5 * 576 (max observed stack usage) */
 
-int readingIndex = 0;
+/*int readingIndex = 0;
 int i = 0;
 int j = 0;
 int flag = 0;
@@ -43,7 +43,7 @@ float previousAvgX;
 float previousAvgY;
 float runningAvgZ;//output average with high value included
 float runningAvgX;//output average with high value included
-float runningAvgY;//output average with high value included
+float runningAvgY;//output average with high value included*/
 float filtered_acc[3];
 float pitch /** the pich angle */, roll 										/** the roll angle */;
 kalman_state xacc_state = {5,100,0,0,0};       							/** Kalman state variables for the X Acceleration */
