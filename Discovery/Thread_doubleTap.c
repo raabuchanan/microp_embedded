@@ -17,9 +17,9 @@
 #define YOFFSET (-9.68 - 3.98)/2                						/** offset on the y-axis as calculated from calibration measurements */
 #define ZOFFSET (-65.13 - 19.04)/2              						/** offset on the z-axis as calculated from calibration measurements */
 
-void Thread_angles (void const *argument);                  /** thread function */
-osThreadId tid_Thread_angles;                               /** thread id */
-osThreadDef(Thread_angles, osPriorityBelowNormal, 1, 864);  /** thread definition with below normal priority and a stack size of 864 = 1.5 * 576 (max observed stack usage) */
+void Thread_doubleTap (void const *argument);                  /** thread function */
+osThreadId tid_Thread_doubleTap;                               /** thread id */
+osThreadDef(Thread_doubleTap, osPriorityAboveNormal, 1, 864);  /** thread definition with below normal priority and a stack size of 864 = 1.5 * 576 (max observed stack usage) */
 
 int readingIndex = 0;
 int i = 0;
@@ -44,12 +44,8 @@ float previousAvgY;
 float runningAvgZ;//output average with high value included
 float runningAvgX;//output average with high value included
 float runningAvgY;//output average with high value included
-float filtered_acc[3];
-float pitch /** the pich angle */, roll 										/** the roll angle */;
-kalman_state xacc_state = {5,100,0,0,0};       							/** Kalman state variables for the X Acceleration */
-kalman_state yacc_state = {5,100,0,0,0};        						/** Kalman state variables for the Y Acceleration */
-kalman_state zacc_state = {5,100,0,0,0};        						/** Kalman state variables for the Z Acceleration */
 
+extern float filtered_acc[3];
 extern osMutexId pitch_mutex;																/** pitch mutex */
 extern osMutexId roll_mutex;															  /** roll mutex */
 osMutexDef(pitch_mutex);																		
@@ -58,43 +54,24 @@ osMutexDef(roll_mutex);
 /**----------------------------------------------------------------------------
  *      Create the thread within RTOS context
  *---------------------------------------------------------------------------*/
-int start_Thread_angles (void) {
+int start_Thread_doubleTap (void) {
 
-  tid_Thread_angles = osThreadCreate(osThread(Thread_angles), NULL); // Start Thread_sevenseg
-  if (!tid_Thread_angles) return(-1); 
+  tid_Thread_doubleTap = osThreadCreate(osThread(Thread_doubleTap), NULL); // Start Thread_sevenseg
+  if (!tid_Thread_doubleTap) return(-1); 
   return(0);
 }
 
 /**----------------------------------------------------------------------------
  *      Thread  'Thread_angles': set Pitch and Roll display
  *---------------------------------------------------------------------------*/
-	void Thread_angles (void const *argument) {
-		
-		pitch_mutex = osMutexCreate(osMutex(pitch_mutex));
-		roll_mutex = osMutexCreate(osMutex(roll_mutex));
-		
+	void Thread_doubleTap (void const *argument) {
+				
 		while(1){
-			float out[3], acc[3], filtered_acc[3];
-			
-			osSignalWait(1, osWaitForever);
-			
-			LIS3DSH_ReadACC(out);
-
-			/* Calculations based on Eq 8 and 9 in Doc 15*/
-			/* Y direction is towards mini usb connector, Z is downwards*/
-			/* Use RHR to digure out X*/
-
-			acc[0] = out[0] - XOFFSET;
-			acc[1] = out[1] - YOFFSET;
-			acc[2] = out[2] - ZOFFSET;
-			
-			filtered_acc[0] = kalmanfilter_c(acc[0],&xacc_state);
-			filtered_acc[1] = kalmanfilter_c(acc[1],&yacc_state);
-			filtered_acc[2] = kalmanfilter_c(acc[2],&zacc_state);
 			/*************************************
 				         Temporary init
 			**************************************/
-			/*if(beginCountdown)
+			osSignalWait(1, osWaitForever);
+			if(beginCountdown)
 				cyclePassed++;
 			test = filtered_acc[2];
 			if(j<50)
@@ -171,16 +148,15 @@ int start_Thread_angles (void) {
 						{
 							doubleTap++;
 							flag = 0;
-						}
-						
-						//flag++;	
-						//beginCountdown = 1;
-						//if(flag >= 4)
-						//{
-							//doubleTap++;
-							//flag = 0;
-						//}
-					//}
+						}						
+						/*flag++;	
+						beginCountdown = 1;
+						if(flag >= 4)
+						{
+							doubleTap++;
+							flag = 0;
+						}*/
+					}
 					else
 						//Does not include the "spiked" value in the average
 						//calculation
@@ -197,15 +173,7 @@ int start_Thread_angles (void) {
 				previousAvgZ = runningAvgZ;
 				previousAvgX = runningAvgX;
 				previousAvgY = runningAvgY;
-			}*/
-			osMutexWait(pitch_mutex, osWaitForever);
-			pitch = 90 + (180/M_PI)*atan2(filtered_acc[1], sqrt(pow(filtered_acc[0], 2) + pow(filtered_acc[2], 2))); //Pitch in degrees
-			osMutexRelease(pitch_mutex);
-	
-			osMutexWait(roll_mutex, osWaitForever);
-			roll  = 90 + (180/M_PI)*atan2(filtered_acc[0], sqrt(pow(filtered_acc[1], 2) + pow(filtered_acc[2], 2))); //Roll in degrees
-			osMutexRelease(roll_mutex);
-			
-			osSignalClear(tid_Thread_angles, 1);
+			}
+			osSignalClear(tid_Thread_doubleTap, 1);
 		}
 	}

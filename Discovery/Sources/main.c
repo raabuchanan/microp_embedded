@@ -18,6 +18,7 @@ extern void initializeADC_IO			(void);
 extern void start_Thread_sevenseg			(void);
 extern void start_Thread_temperature			(void);
 extern void start_Thread_angles			(void);
+extern void start_Thread_doubleTap			(void);
 extern void start_Thread_keypad		(void);
 extern void Thread_sevenseg(void const *argument);
 extern void Thread_temperature(void const *argument);
@@ -26,6 +27,7 @@ extern osThreadId tid_Thread_temperature;
 extern osThreadId tid_Thread_sevenseg;
 extern osThreadId tid_Thread_keypad;
 extern osThreadId tid_Thread_angles;
+extern osThreadId tid_Thread_doubleTap;
 
 TIM_HandleTypeDef* timHandleTypeDef;            /** timer handler to be initialized */
 osMutexId temp_mutex;														/** temperature mutex */
@@ -106,6 +108,7 @@ int main (void) {
 	/* Start the threads */
 	start_Thread_angles();
 	start_Thread_temperature();
+	start_Thread_doubleTap();
 	//start_Thread_sevenseg();
 	//start_Thread_keypad();
   
