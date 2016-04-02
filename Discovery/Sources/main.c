@@ -118,7 +118,9 @@ int main (void) {
 	osKernelStart();  /* start thread execution*/
 	
 	while(1){
-	HAL_SPI_Receive (&nucleoSPIHandle, &data, 0x01, 10);
+	HAL_SPI_Receive (&nucleoSPIHandle, &data, sizeof('@'), 0);
+		
+		osDelay(1000);
 	}
 	
 }

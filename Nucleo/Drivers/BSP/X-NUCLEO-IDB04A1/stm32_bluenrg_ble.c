@@ -183,6 +183,7 @@ void HAL_SPI_MspInit(SPI_HandleTypeDef* hspi)
     HAL_NVIC_EnableIRQ(BNRG_SPI_EXTI_IRQn);
   }
 	else if (hspi->Instance==SPI2){
+		printf("Initializing SPI2");
     /* Enable peripherals clock */
 
     /* Enable GPIO Ports Clock */  
