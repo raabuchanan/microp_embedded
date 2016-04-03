@@ -87,8 +87,9 @@ void SystemClock_Config(void) {
   * Main function
   */
 int main (void) {
-	uint8_t data;
-  osKernelInitialize();                     /* initialize CMSIS-RTOS          */
+	uint8_t data[4];
+	float x = *(float *)&data;
+  //osKernelInitialize();                     /* initialize CMSIS-RTOS          */
 
   HAL_Init();                               /* Initialize the HAL Library     */
 	
@@ -110,17 +111,18 @@ int main (void) {
 	initTimer(timHandleTypeDef);
 
 	/* Start the threads */
-	start_Thread_angles();
-	start_Thread_temperature();
+	//start_Thread_angles();
+	//start_Thread_temperature();
 	//start_Thread_sevenseg();
 	//start_Thread_keypad();
   
 	osKernelStart();  /* start thread execution*/
 	
 	while(1){
-	HAL_SPI_Receive (&nucleoSPIHandle, &data, sizeof('@'), 0);
 		
-		osDelay(1000);
+		HAL_SPI_Receive (&nucleoSPIHandle, data, 4, 10);
+		x = *(float *)&data;
+		//osDelay(1000);
 	}
 	
 }

@@ -282,7 +282,9 @@ int main(void)
   /* Set output power level */
   ret = aci_hal_set_tx_power_level(1,4);
 
-	uint8_t data = 'A';
+	float f = 2.45;
+	uint8_t *s = (uint8_t *) &f;
+	uint8_t data[4] = "A&B%";
 	
   while(1)
   {
@@ -292,7 +294,7 @@ int main(void)
     Update_Time_Characteristics();
 #endif
 		
-		HAL_SPI_Transmit(&discoverySPIHandle, &data, sizeof(data), 1);
+		HAL_SPI_Transmit(&discoverySPIHandle, data, 4, 10);
 		//printf("Sending: %s\n", &data);
   }
 }
