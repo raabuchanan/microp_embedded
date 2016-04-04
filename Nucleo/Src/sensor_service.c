@@ -280,7 +280,7 @@ tBleStatus Add_LED_Service(void)
    * now add "LED service" to GATT server, service handle is returned
    * via 'ledServHandle' parameter of aci_gatt_add_serv() API. 
   */  
-  ret = aci_gatt_add_serv(UUID_TYPE_128, uuid, PRIMARY_SERVICE, 7,
+  ret = aci_gatt_add_serv(UUID_TYPE_128, uuid, PRIMARY_SERVICE, 4,
                           &ledServHandle);
   if (ret != BLE_STATUS_SUCCESS) goto fail;    
   
@@ -296,7 +296,7 @@ tBleStatus Add_LED_Service(void)
                            16, 1, &ledSpeedCharHandle);
   if (ret != BLE_STATUS_SUCCESS) goto fail;  
   
-  PRINTF("Service LED BUTTON added. Handle 0x%04X, LED speed Charac handle: 0x%04X\n",ledServHandle, ledSpeedCharHandle);	
+  PRINTF("Service LED BUTTON added. Handle 0x%04X, LED speed Charac handle: 0x%04X\n", ledServHandle, ledSpeedCharHandle);	
   return BLE_STATUS_SUCCESS; 
   
 fail:
@@ -315,7 +315,9 @@ fail:
 void Attribute_Modified_CB(uint16_t handle, uint8_t data_length, uint8_t *att_data)
 {
   /* If GATT client has modified 'LED speed characteristic' value, toggle LED2 */
-  if(handle == ledSpeedCharHandle + 1){      
+  if(handle == ledSpeedCharHandle + 1){
+			PRINTF("%x\n", att_data);
+			PRINTF("GOT WRITE\n");
       BSP_LED_Toggle(LED2);
   }
 }
