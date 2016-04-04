@@ -87,8 +87,10 @@ void SystemClock_Config(void) {
   * Main function
   */
 int main (void) {
-	uint8_t data[4];
-	float x = *(float *)&data;
+	uint8_t data[18];
+	HAL_StatusTypeDef Rx;
+	char test[8];
+
   //osKernelInitialize();                     /* initialize CMSIS-RTOS          */
 
   HAL_Init();                               /* Initialize the HAL Library     */
@@ -96,19 +98,19 @@ int main (void) {
   SystemClock_Config();                     /* Configure the System Clock     */
 	
 	/* Initialize GPIOs */
-	initGPIOs();
+//	initGPIOs();
 
 	nucleo_SPI_init();
 	
 	/* Initialize the ADC IO */
-	initializeADC_IO();
+//	initializeADC_IO();
 
 	/* Initialize the accelerometer configs */
-	initAccelerometers();
+//	initAccelerometers();
 
 	/* Initialize timer */
-	timHandleTypeDef = malloc(sizeof(*timHandleTypeDef));
-	initTimer(timHandleTypeDef);
+//	timHandleTypeDef = malloc(sizeof(*timHandleTypeDef));
+//	initTimer(timHandleTypeDef);
 
 	/* Start the threads */
 	//start_Thread_angles();
@@ -116,13 +118,22 @@ int main (void) {
 	//start_Thread_sevenseg();
 	//start_Thread_keypad();
   
-	osKernelStart();  /* start thread execution*/
+	//osKernelStart();  /* start thread execution*/
 	
 	while(1){
 		
-		HAL_SPI_Receive (&nucleoSPIHandle, data, 4, 10);
-		x = *(float *)&data;
-		//osDelay(1000);
+		Rx = HAL_SPI_Receive (&nucleoSPIHandle, data, 18, 1);
+		
+		if (data[0] == '!' && data[17] == '$'){
+			test[0] = data[1];
+			test[1] = data[2];
+			test[2] = data[3];
+			test[3] = data[4];
+			test[4] = data[5];
+			test[5] = data[6];
+			test[6] = data[7];
+			test[7] = data[8];
+		}
 	}
 	
 }
