@@ -17,9 +17,9 @@
 #define YOFFSET (-9.68 - 3.98)/2                						/** offset on the y-axis as calculated from calibration measurements */
 #define ZOFFSET (-65.13 - 19.04)/2              						/** offset on the z-axis as calculated from calibration measurements */
 
-void Thread_doubleTap (void const *argument);                  /** thread function */
+void Thread_doubleTap(void const *argument);                  /** thread function */
 osThreadId tid_Thread_doubleTap;                               /** thread id */
-osThreadDef(Thread_doubleTap, osPriorityAboveNormal, 1, 864);  /** thread definition with below normal priority and a stack size of 864 = 1.5 * 576 (max observed stack usage) */
+osThreadDef(Thread_doubleTap, osPriorityAboveNormal, 1, 0);  /** thread definition with below normal priority and a stack size of 864 = 1.5 * 576 (max observed stack usage) */
 
 int readingIndex = 0;
 int i = 0;
@@ -29,6 +29,7 @@ int doubleTap = 0;
 int updateAvg = 0;
 int cyclePassed = 0;
 int beginCountdown = 0;
+int Ted = 1;
 float active = 0;
 float spikingAverage[] = {1000,1000,1000,1000,1000,1000,1000,1000,1000,1000};
 float globalAverageZ[] = {1000,1000,1000,1000,1000,1000,1000,1000,1000,1000};
@@ -43,48 +44,48 @@ float previousAvgX;
 float previousAvgY;
 float runningAvgZ;//output average with high value included
 float runningAvgX;//output average with high value included
-float runningAvgY;//output average with high value included
+float runningAvgY;//output average with high value included*/
 
-extern float filtered_acc[3];
-extern osMutexId pitch_mutex;																/** pitch mutex */
-extern osMutexId roll_mutex;															  /** roll mutex */
-//osMutexDef(pitch_mutex);																		
-//osMutexDef(roll_mutex);
+extern float filteredX;
+extern float filteredY;
+extern float filteredZ;
 
 /**----------------------------------------------------------------------------
  *      Create the thread within RTOS context
  *---------------------------------------------------------------------------*/
 int start_Thread_doubleTap (void) {
 
-  tid_Thread_doubleTap = osThreadCreate(osThread(Thread_doubleTap), NULL); // Start Thread_sevenseg
-  if (!tid_Thread_doubleTap) return(-1); 
+  tid_Thread_doubleTap = osThreadCreate(osThread(Thread_doubleTap), NULL);
+  if (tid_Thread_doubleTap == NULL) return(-1); 
   return(0);
 }
 
 /**----------------------------------------------------------------------------
  *      Thread  'Thread_angles': set Pitch and Roll display
  *---------------------------------------------------------------------------*/
-	void Thread_doubleTap (void const *argument) {
-				
+	void Thread_doubleTap(void const *argument) 
+	{
+		
 		while(1){
 			/*************************************
 				         Temporary init
 			**************************************/
 			osSignalWait(1, osWaitForever);
+			Ted++;
 			if(beginCountdown)
 				cyclePassed++;
-			test = filtered_acc[2];
-			if(j<50)
+			test = filteredZ;
+			if(j<10)
 			{
-				spikingAverage[readingIndex++%10] = filtered_acc[2];
+				spikingAverage[readingIndex++%10] = filteredY;
 				j++;
 			}
 			else
 			{			
 				//
-				globalAverageX[readingIndex%10] = filtered_acc[0];
-				globalAverageY[readingIndex%10] = filtered_acc[1];
-				globalAverageZ[readingIndex++%10] = filtered_acc[2];
+				globalAverageX[readingIndex%10] = filteredX;
+				globalAverageY[readingIndex%10] = filteredY;
+				globalAverageZ[readingIndex++%10] = filteredZ;
 
 				for(i = 0,average = 0,runningAvgZ = 0, runningAvgX = 0, runningAvgY = 0; i<10 ;i++)
 				{
@@ -120,15 +121,15 @@ int start_Thread_doubleTap (void) {
 				if(updateAvg)
 				{
 					//if tap detected
-					if(fabs(filtered_acc[2] - average)>10 && fabs(filtered_acc[2] - average)<50)
+					if(fabs(filteredZ - average)>10 && fabs(filteredZ - average)<50)
 					{
 						//If first spike, save the spiked value
 						//And record as first tap
 						if(flag == 0)
 						{
-							active = filtered_acc[2];
+							active = filteredZ;
 							beginCountdown = 1;
-							returnGap = fabs(filtered_acc[2] - average);
+							returnGap = fabs(filteredZ - average);
 							flag++;
 						}		
 						//Once tapped, if nothing else happens, value should return to
@@ -138,8 +139,8 @@ int start_Thread_doubleTap (void) {
 						{
 							//If filtered acceleration is getting smaller,
 							//then board returning to original position
-							if(fabs(filtered_acc[2] - average) < returnGap)
-								returnGap = fabs(filtered_acc[2] - average);
+							if(fabs(filteredZ - average) < returnGap)
+								returnGap = fabs(filteredZ - average);
 							else
 								flag++;							
 						}
@@ -149,20 +150,20 @@ int start_Thread_doubleTap (void) {
 							doubleTap++;
 							flag = 0;
 						}						
-						/*flag++;	
-						beginCountdown = 1;
-						if(flag >= 4)
-						{
-							doubleTap++;
-							flag = 0;
-						}*/
+						//flag++;	
+						//beginCountdown = 1;
+						//if(flag >= 4)
+						//{
+							//doubleTap++;
+							//flag = 0;
+						//}
 					}
 					else
 						//Does not include the "spiked" value in the average
 						//calculation
-						spikingAverage[readingIndex++%10] = filtered_acc[2];
+						spikingAverage[readingIndex++%10] = filteredZ;
 				}		
-				if(cyclePassed > 10)
+				if(cyclePassed > 20)
 				{
 					flag = 0;
 					cyclePassed = 0;
