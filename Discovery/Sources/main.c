@@ -122,9 +122,10 @@ int main (void) {
 	
 	while(1){
 		
-		Rx = HAL_SPI_Receive (&nucleoSPIHandle, data, 18, 1);
+//		Rx = HAL_SPI_Receive (&nucleoSPIHandle, data, 18, 1);
+			convertFloatToBytes(data+1, 22.5f);
 		
-		if (data[0] == '!' && data[17] == '$'){
+//		if (data[0] == '!' && data[17] == '$'){
 			test[0] = data[1];
 			test[1] = data[2];
 			test[2] = data[3];
@@ -133,7 +134,8 @@ int main (void) {
 			test[5] = data[6];
 			test[6] = data[7];
 			test[7] = data[8];
-		}
+//		}
+
 	}
 	
 }

@@ -11,6 +11,15 @@
 
 #include "util.h"
 
+/* Store Value into a buffer in Little Endian Format */
+#define STORE_LE_16(buf, val)    ( ((buf)[0] =  (uint8_t) (val)    ) , \
+                                   ((buf)[1] =  (uint8_t) (val>>8) ) )
+
+#define STORE_LE_32(buf, val)    ( ((buf)[0] =  (uint8_t) (val)    ) , \
+                                   ((buf)[1] =  (uint8_t) (val>>8) ) , \
+																	 ((buf)[2] =  (uint8_t) (val>>16) ) , \
+																	 ((buf)[3] =  (uint8_t) (val>>24) ) )
+
 /**
  * @brief      Convert characters to float, assuming the input string is a valid
  * float
@@ -65,4 +74,17 @@ void convertFloatToChars(float number, char* digitZero, char* digitOne, char* di
 		*digitTwo = digitOnes;
 		*decimalPointLocation = 2;
 	}
+}
+
+/**
+ * @brief 		Convert a float to its IEEE-754 representation in 4 bytes
+ *
+ * @param[in[ buff									the 4-byte long buffer containing the result
+ * @param[in] f											the float to be converted
+ */
+void convertFloatToBytes(uint8_t buff[], float number) {
+	f32_u number_u;
+	number_u.f = number;
+    
+  STORE_LE_32(buff, number_u.i);
 }

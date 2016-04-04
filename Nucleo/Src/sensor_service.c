@@ -344,7 +344,7 @@ void Read_Request_CB(uint16_t handle)
     Acc_Update((Angles_t*)&angles_data);
   }  
   else if(handle == tempCharHandle + 1){
-    f16_u data;
+    f32_u data;
     data.f = 210.0f + ((uint64_t)rand()*15)/RAND_MAX; //sensor emulation        
     Acc_Update((Angles_t*)&angles_data); //FIXME: to overcome issue on Android App
                                         // If the user button is not pressed within
