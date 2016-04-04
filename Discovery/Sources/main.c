@@ -13,6 +13,7 @@
 #include "cmsis_os.h"                   // ARM::CMSIS:RTOS:Keil RTX
 #include "RTE_Components.h"             // Component selection
 #include "main.h"
+#include "nucleo_interface.h"
 
 extern void initializeADC_IO			(void);
 extern void start_Thread_sevenseg			(void);
@@ -26,11 +27,14 @@ extern osThreadId tid_Thread_temperature;
 extern osThreadId tid_Thread_sevenseg;
 extern osThreadId tid_Thread_keypad;
 extern osThreadId tid_Thread_angles;
+extern SPI_HandleTypeDef nucleoSPIHandle;
 
 TIM_HandleTypeDef* timHandleTypeDef;            /** timer handler to be initialized */
 osMutexId temp_mutex;														/** temperature mutex */
 osMutexId pitch_mutex;													/** pitch mutex */
 osMutexId roll_mutex;														/** roll mutex */
+
+SPI_HandleTypeDef SPI_Handle;
 
 /**
 	These lines are mandatory to make CMSIS-RTOS RTX work with te new Cube HAL
@@ -83,33 +87,55 @@ void SystemClock_Config(void) {
   * Main function
   */
 int main (void) {
+	uint8_t data[18];
+	HAL_StatusTypeDef Rx;
+	char test[8];
 
-  osKernelInitialize();                     /* initialize CMSIS-RTOS          */
+  //osKernelInitialize();                     /* initialize CMSIS-RTOS          */
 
   HAL_Init();                               /* Initialize the HAL Library     */
-
+	
   SystemClock_Config();                     /* Configure the System Clock     */
 	
 	/* Initialize GPIOs */
-	initGPIOs();
+//	initGPIOs();
 
+	nucleo_SPI_init();
+	
 	/* Initialize the ADC IO */
-	initializeADC_IO();
+//	initializeADC_IO();
 
 	/* Initialize the accelerometer configs */
-	initAccelerometers();
+//	initAccelerometers();
 
 	/* Initialize timer */
-	timHandleTypeDef = malloc(sizeof(*timHandleTypeDef));
-	initTimer(timHandleTypeDef);
+//	timHandleTypeDef = malloc(sizeof(*timHandleTypeDef));
+//	initTimer(timHandleTypeDef);
 
 	/* Start the threads */
-	start_Thread_angles();
-	start_Thread_temperature();
+	//start_Thread_angles();
+	//start_Thread_temperature();
 	//start_Thread_sevenseg();
 	//start_Thread_keypad();
   
-	osKernelStart();  /* start thread execution         */
+	//osKernelStart();  /* start thread execution*/
+	
+	while(1){
+		
+		Rx = HAL_SPI_Receive (&nucleoSPIHandle, data, 18, 1);
+		
+		if (data[0] == '!' && data[17] == '$'){
+			test[0] = data[1];
+			test[1] = data[2];
+			test[2] = data[3];
+			test[3] = data[4];
+			test[4] = data[5];
+			test[5] = data[6];
+			test[6] = data[7];
+			test[7] = data[8];
+		}
+	}
+	
 }
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {

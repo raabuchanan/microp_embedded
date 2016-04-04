@@ -482,6 +482,11 @@
               <FileType>1</FileType>
               <FilePath>.\Sources\Thread_angles.c</FilePath>
             </File>
+            <File>
+              <FileName>nucleo_interface.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\nucleo_interface.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -1033,6 +1038,11 @@
               <FileType>1</FileType>
               <FilePath>.\Sources\Thread_angles.c</FilePath>
             </File>
+            <File>
+              <FileName>nucleo_interface.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\nucleo_interface.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -1583,6 +1593,11 @@
               <FileName>Thread_angles.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Sources\Thread_angles.c</FilePath>
+            </File>
+            <File>
+              <FileName>nucleo_interface.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\nucleo_interface.c</FilePath>
             </File>
           </Files>
         </Group>
