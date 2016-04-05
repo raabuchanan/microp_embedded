@@ -98,14 +98,6 @@ typedef union {
   i32_t i;
 } f32_u;
 
-/** 
- * @brief Structure containing roll and pitch angle values (in degrees)
- */
-typedef struct {
-  f32_u roll;
-  f32_u pitch;
-} Angles_t;
-
 /**
  * @}
  */
@@ -114,8 +106,9 @@ typedef struct {
  *  @{
  */
 tBleStatus Add_Acc_Service(void);
-tBleStatus Acc_Update(Angles_t *data);
+tBleStatus Acc_Update(uint8_t angles_data[]);
 tBleStatus Add_Temperature_Service(void);
+tBleStatus Temp_Update(uint8_t temp_data[]);
 void       setConnectable(void);
 void       enableNotification(void);
 void       GAP_ConnectionComplete_CB(uint8_t addr[6], uint16_t handle);

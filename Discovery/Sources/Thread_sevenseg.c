@@ -19,8 +19,8 @@ void Thread_sevenseg (void const *argument);                 /** thread function
 osThreadId tid_Thread_sevenseg;                              /** thread id */
 osThreadDef(Thread_sevenseg, osPriorityNormal, 1, 312);			 /** thread definition with above normal priority and a stack size of 312 = 1.5 * 208 (max observed stack usage) */
 extern DisplayMode currentMode;
-extern float filtered_temperature;
-extern float pitch, roll;
+//extern float filtered_temperature;
+//extern float pitch, roll;
 float TEMPERATURE_THRESHOLD_FOR_ALARM = 35.0f;							 /** alarm threshold */
 
 /**----------------------------------------------------------------------------
@@ -38,27 +38,27 @@ int start_Thread_sevenseg (void) {
  *---------------------------------------------------------------------------*/
 	void Thread_sevenseg (void const *argument) {
 		while(1){
-			float displayValue = 0;
-			if (currentMode == TEMPERATURE){
-				displayValue = filtered_temperature;
-			}else if (currentMode == PITCH){
-				displayValue = pitch; // get temperature/accelerometer data depending on the current mode
-			}else if (currentMode == ROLL){
-				displayValue = roll; // get temperature/accelerometer data depending on the current mode
-			}
-			
-			if (filtered_temperature > TEMPERATURE_THRESHOLD_FOR_ALARM) {
-				int i;
-				for (i = 0; i < ALARM_DELAY/NORMAL_DELAY; i++) {
-					displayOn7Seg(displayValue); // get temperature/accelerometer data depending o nS
-					osDelay(NORMAL_DELAY);
-				}
-				Reset7SegDisplay();
-				osDelay(ALARM_DELAY);
-			} else {
-				displayOn7Seg(displayValue);
-				osDelay(NORMAL_DELAY);
-			}
+//			float displayValue = 0;
+//			if (currentMode == TEMPERATURE){
+//				displayValue = filtered_temperature;
+//			}else if (currentMode == PITCH){
+//				displayValue = pitch; // get temperature/accelerometer data depending on the current mode
+//			}else if (currentMode == ROLL){
+//				displayValue = roll; // get temperature/accelerometer data depending on the current mode
+//			}
+//			
+//			if (filtered_temperature > TEMPERATURE_THRESHOLD_FOR_ALARM) {
+//				int i;
+//				for (i = 0; i < ALARM_DELAY/NORMAL_DELAY; i++) {
+//					displayOn7Seg(displayValue); // get temperature/accelerometer data depending o nS
+//					osDelay(NORMAL_DELAY);
+//				}
+//				Reset7SegDisplay();
+//				osDelay(ALARM_DELAY);
+//			} else {
+//				displayOn7Seg(displayValue);
+//				osDelay(NORMAL_DELAY);
+//			}
 		}
 	}
 	

@@ -7,5 +7,8 @@
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f4xx_hal.h"
 void nucleo_SPI_init(void);
+HAL_StatusTypeDef send_pkg(uint32_t timeOut);
+
+
 #endif
 

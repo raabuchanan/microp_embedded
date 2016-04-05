@@ -20,6 +20,12 @@
 																	 ((buf)[2] =  (uint8_t) (val>>16) ) , \
 																	 ((buf)[3] =  (uint8_t) (val>>24) ) )
 
+#define STORE_BE_32(buf, val)    ( ((buf)[3] =  (uint8_t) (val)    ) , \
+                                   ((buf)[2] =  (uint8_t) (val>>8) ) , \
+																	 ((buf)[1] =  (uint8_t) (val>>16) ) , \
+																	 ((buf)[0] =  (uint8_t) (val>>24) ) )
+
+
 /**
  * @brief      Convert characters to float, assuming the input string is a valid
  * float

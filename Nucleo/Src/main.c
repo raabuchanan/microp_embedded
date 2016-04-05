@@ -40,7 +40,6 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "cube_hal.h"
-//#include "discovery_interface.h"
 #include "osal.h"
 #include "sensor_service.h"
 #include "debug.h"
@@ -78,10 +77,10 @@
  * @{
  */
  extern void discovery_SPI_init(void);
+ extern HAL_StatusTypeDef update_phone(uint32_t timeOut);
 /* Private variables ---------------------------------------------------------*/
 extern volatile uint8_t set_connectable;
 extern volatile int connected;
-extern Angles_t angles_data;
 uint8_t bnrg_expansion_board = IDB04A1; /* at startup, suppose the X-NUCLEO-IDB04A1 is used */
 extern SPI_HandleTypeDef discoverySPIHandle;
 
@@ -93,7 +92,7 @@ extern SPI_HandleTypeDef discoverySPIHandle;
  * @{
  */
 /* Private function prototypes -----------------------------------------------*/
-void User_Process(Angles_t* p_axes);
+void User_Process(void);
 /**
  * @}
  */
@@ -127,9 +126,9 @@ int main(void)
   uint8_t SERVER_BDADDR[] = {0x09, 0x34, 0x00, 0xE1, 0x80, 0x03};
   uint8_t bdaddr[BDADDR_SIZE];
   uint16_t service_handle, dev_name_char_handle, appearance_char_handle;
-  
   uint8_t  hwVersion;
   uint16_t fwVersion;
+	HAL_StatusTypeDef updateStatus;
   
   int ret;  
   
@@ -249,19 +248,16 @@ int main(void)
   else
     PRINTF("Error while adding Temperature service.\n");
 
-
   /* Set output power level */
   ret = aci_hal_set_tx_power_level(1,4);
 
-	uint8_t data[] = "!RRRRuuuuSSSSssss$";
-	HAL_StatusTypeDef Tx;
-	
   while(1)
   {
     HCI_Process();
-    User_Process(&angles_data);
-		Tx = HAL_SPI_Transmit(&discoverySPIHandle, data, 18, 1);
-		data[1] += 1;
+    User_Process();
+		
+		updateStatus = update_phone(1);
+
   }
 }
 
@@ -272,29 +268,13 @@ int main(void)
  * @param  Angle_t* anlges
  * @retval None
  */
-void User_Process(Angles_t* angles)
+void User_Process()
 {
   if(set_connectable){
     setConnectable();
     set_connectable = FALSE;
   }  
 
-  /* Check if the user has pushed the button */
-  if(BSP_PB_GetState(BUTTON_KEY) == RESET)
-  {
-    while (BSP_PB_GetState(BUTTON_KEY) == RESET);
-    
-    //BSP_LED_Toggle(LED2); //used for debugging (BSP_LED_Init() above must be also enabled)
-    
-//    if(connected)
-//    {
-      /* Update acceleration data */
-      angles->roll.f += 1.5f;
-      angles->pitch.f -= 2.5f;
-
-      Acc_Update(angles);
-//    }
-  }
 }
 
 /**

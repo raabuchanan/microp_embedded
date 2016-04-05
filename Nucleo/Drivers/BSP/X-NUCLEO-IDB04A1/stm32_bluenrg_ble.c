@@ -183,8 +183,6 @@ void HAL_SPI_MspInit(SPI_HandleTypeDef* hspi)
     HAL_NVIC_EnableIRQ(BNRG_SPI_EXTI_IRQn);
   }
 	else if (hspi->Instance==SPI2){
-		printf("Initializing SPI2");
-
     /* Enable GPIO Ports Clock */  
     __GPIOB_CLK_ENABLE();
 
@@ -201,7 +199,7 @@ void HAL_SPI_MspInit(SPI_HandleTypeDef* hspi)
 
     /* MISO */
     GPIO_InitStruct.Pin = GPIO_PIN_14;
-    GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+    GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
     GPIO_InitStruct.Pull = GPIO_PULLDOWN;
     GPIO_InitStruct.Speed = GPIO_SPEED_HIGH;
     GPIO_InitStruct.Alternate = GPIO_AF5_SPI2;
@@ -210,19 +208,19 @@ void HAL_SPI_MspInit(SPI_HandleTypeDef* hspi)
     /* MOSI */
     GPIO_InitStruct.Pin = GPIO_PIN_15;
     GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-    GPIO_InitStruct.Pull = GPIO_PULLDOWN;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
     GPIO_InitStruct.Speed = GPIO_SPEED_HIGH;
     GPIO_InitStruct.Alternate = GPIO_AF5_SPI2;
     HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
     /* NSS/CSN/CS */
     GPIO_InitStruct.Pin = GPIO_PIN_6;
-    GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+    GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
     GPIO_InitStruct.Pull = GPIO_PULLUP;
     GPIO_InitStruct.Speed = GPIO_SPEED_HIGH;
     GPIO_InitStruct.Alternate = 0;
     HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
-    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_6, GPIO_PIN_SET);
+    //HAL_GPIO_WritePin(GPIOB, GPIO_PIN_6, GPIO_PIN_SET);
 	}
 }
 
