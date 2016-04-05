@@ -13,9 +13,6 @@
 #include "main.h"
 
 #define M_PI 3.14159265358979323846            							/** an approximation of pi */
-#define XOFFSET (-75.11 - 42.78)/2              						/** offset on the x-axis as calculated from calibration measurements */
-#define YOFFSET (-9.68 - 3.98)/2                						/** offset on the y-axis as calculated from calibration measurements */
-#define ZOFFSET (-65.13 - 19.04)/2              						/** offset on the z-axis as calculated from calibration measurements */
 
 void Thread_doubleTap(void const *argument);                  /** thread function */
 osThreadId tid_Thread_doubleTap;                               /** thread id */
@@ -24,17 +21,22 @@ osThreadDef(Thread_doubleTap, osPriorityAboveNormal, 1, 0);  /** thread definiti
 int readingIndex = 0;
 int i = 0;
 int j = 0;
-int flag = 0;
+int tappedOnce = 0;
+int tappedTwice = 0;
 int doubleTap = 0;
 int updateAvg = 0;
+int tappedTimer = 0;
 int cyclePassed = 0;
 int beginCountdown = 0;
-int Ted = 1;
+int debounce = 1;
+int skippedIteration = 0;
+int spiked = 0;
+
 float active = 0;
-float spikingAverage[] = {1000,1000,1000,1000,1000,1000,1000,1000,1000,1000};
-float globalAverageZ[] = {1000,1000,1000,1000,1000,1000,1000,1000,1000,1000};
-float globalAverageX[] = {1000,1000,1000,1000,1000,1000,1000,1000,1000,1000};
-float globalAverageY[] = {1000,1000,1000,1000,1000,1000,1000,1000,1000,1000};
+float spikingAverage[10];
+float globalAverageZ[10];
+float globalAverageX[10];
+float globalAverageY[10];
 
 float average;
 float returnGap = 0;
@@ -71,22 +73,20 @@ int start_Thread_doubleTap (void) {
 				         Temporary init
 			**************************************/
 			osSignalWait(1, osWaitForever);
-			Ted++;
 			if(beginCountdown)
 				cyclePassed++;
 			test = filteredZ;
-			if(j<10)
-			{
-				spikingAverage[readingIndex++%10] = filteredY;
+			if(j<100)
+			{				
+				globalAverageX[readingIndex%10] = filteredX;
+				globalAverageY[readingIndex%10] = filteredY;
+				spikingAverage[readingIndex%10] = filteredZ;
+				globalAverageZ[readingIndex++%10] = filteredZ;
+
 				j++;
 			}
 			else
 			{			
-				//
-				globalAverageX[readingIndex%10] = filteredX;
-				globalAverageY[readingIndex%10] = filteredY;
-				globalAverageZ[readingIndex++%10] = filteredZ;
-
 				for(i = 0,average = 0,runningAvgZ = 0, runningAvgX = 0, runningAvgY = 0; i<10 ;i++)
 				{
 					average += spikingAverage[i];
@@ -105,69 +105,78 @@ int start_Thread_doubleTap (void) {
 					 fabs(previousAvgX-runningAvgX)<5 &&
 					 fabs(previousAvgY-runningAvgY)<5)
 				{
-					//Values safe to use 
-					for(i = 0; i<10 ;i++)
-						//Stores all values from the gloabl running average 
-						//to the local average to detect spike
-						spikingAverage[i] = globalAverageZ[i];
-					//unlock the flag
-					updateAvg = 1;
+
+						//Values safe to use 
+						for(i = 0; i<10 ;i++)
+						{
+							//Stores all values from the gloabl running average 
+							//to the local average to detect spike
+							//if(fabs(filteredZ - average) < 50)
+								spikingAverage[i] = globalAverageZ[i];
+						}
+						//unlock the flag
+						updateAvg = 1;
+
 				}
-				else 
-					//locak the flag
+				else
+					//lock the flag
 					updateAvg = 0;
 				
 				//Runs only when boad is stable ie. When it is not moving
 				if(updateAvg)
 				{
+					if(debounce>0)
+						debounce--;
 					//if tap detected
-					if(fabs(filteredZ - average)>10 && fabs(filteredZ - average)<50)
+					if(fabs(filteredZ - average)>10 && fabs(filteredZ - average)<50 && debounce == 0)
 					{
 						//If first spike, save the spiked value
 						//And record as first tap
-						if(flag == 0)
+						if(!tappedOnce)
 						{
 							active = filteredZ;
 							beginCountdown = 1;
 							returnGap = fabs(filteredZ - average);
-							flag++;
+							tappedOnce = 1;
 						}		
 						//Once tapped, if nothing else happens, value should return to
 						//approximately average value, thus if another spike detected 
 						//then, double tap!						
 						else
 						{
+							tappedTimer++;
 							//If filtered acceleration is getting smaller,
 							//then board returning to original position
-							if(fabs(filteredZ - average) < returnGap)
-								returnGap = fabs(filteredZ - average);
-							else
-								flag++;							
+							/*if(fabs(filteredZ - average) < returnGap)
+								returnGap = fabs(filteredZ - average);*/
+							if(tappedTimer == 5)
+								tappedTwice = 1;							
 						}
 						//If flagged twice, then double tap detected
-						if(flag == 2)
+						if(tappedTwice)
 						{
 							doubleTap++;
-							flag = 0;
-						}						
-						//flag++;	
-						//beginCountdown = 1;
-						//if(flag >= 4)
-						//{
-							//doubleTap++;
-							//flag = 0;
-						//}
+							tappedOnce = 0;
+							tappedTwice = 0;
+							tappedTimer = 0;
+							cyclePassed = 30;
+							debounce = 20;
+						}		
 					}
-					else
 						//Does not include the "spiked" value in the average
 						//calculation
-						spikingAverage[readingIndex++%10] = filteredZ;
+						
 				}		
+				globalAverageX[readingIndex%10] = filteredX;
+				globalAverageY[readingIndex%10] = filteredY;
+				globalAverageZ[readingIndex++%10] = filteredZ;
 				if(cyclePassed > 20)
 				{
-					flag = 0;
+					tappedOnce = 0;
+					tappedTwice = 0;
 					cyclePassed = 0;
 					beginCountdown = 0;
+					tappedTimer = 0;
 					active = 0;
 					returnGap = 0;
 				}
