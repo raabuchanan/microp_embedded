@@ -15,6 +15,15 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include <stdlib.h>
+#include <stdint.h>
+
+/**
+ * @brief Union containing the integer representation (32-bit IEEE-754) of a float
+ */
+typedef union {
+	float f;
+  int i;
+} f32_u;
 
 /**
  * @brief      Convert characters to float, assuming the input string is a valid
@@ -42,5 +51,12 @@ float convertCharsToFloat(char* str);
  */
 void convertFloatToChars(float number, char* digitZero, char* digitOne, char* digitTwo, int* decimalPointLocation);
 
-#endif
+/**
+ * @brief 		Convert a float to its IEEE-754 representation in 4 bytes
+ *
+ * @param[in[ buff									the 4-byte long buffer containing the result
+ * @param[in] f											the float to be converted
+ */
+void convertFloatToBytes(uint8_t buff[], float f);
 
+#endif

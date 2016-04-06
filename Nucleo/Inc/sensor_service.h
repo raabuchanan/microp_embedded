@@ -96,14 +96,14 @@ typedef int i32_t;
 typedef union {
 	float f;
   i32_t i;
-} f16_u;
+} f32_u;
 
 /** 
  * @brief Structure containing roll and pitch angle values (in degrees)
  */
 typedef struct {
-  f16_u roll;
-  f16_u pitch;
+  f32_u roll;
+  f32_u pitch;
 } Angles_t;
 
 /**

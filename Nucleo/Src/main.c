@@ -40,7 +40,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "cube_hal.h"
-
+//#include "discovery_interface.h"
 #include "osal.h"
 #include "sensor_service.h"
 #include "debug.h"
@@ -77,11 +77,14 @@
 /** @defgroup MAIN_Private_Variables
  * @{
  */
+ extern void discovery_SPI_init(void);
 /* Private variables ---------------------------------------------------------*/
 extern volatile uint8_t set_connectable;
 extern volatile int connected;
 extern Angles_t angles_data;
 uint8_t bnrg_expansion_board = IDB04A1; /* at startup, suppose the X-NUCLEO-IDB04A1 is used */
+extern SPI_HandleTypeDef discoverySPIHandle;
+
 /**
  * @}
  */
@@ -140,10 +143,7 @@ int main(void)
    *  - Low Level Initialization
    */
   HAL_Init();
-	
-	/* Configure LED2 */
-	BSP_LED_Init(LED2);  //TODO: Integrate with Discovery board
-  
+
   /* Configure the User Button in GPIO Mode */
   BSP_PB_Init(BUTTON_KEY, BUTTON_MODE_GPIO);
   
@@ -153,6 +153,8 @@ int main(void)
 
   /* Initialize the BlueNRG SPI driver */
   BNRG_SPI_Init();
+	
+	discovery_SPI_init();
   
   /* Initialize the BlueNRG HCI */
   HCI_Init();
@@ -170,7 +172,8 @@ int main(void)
    * command after reset otherwise it will fail.
    */
   BlueNRG_RST();
-  
+	
+	
   PRINTF("HWver %d, FWver %d", hwVersion, fwVersion);
 	PRINTF("\n\n");
   
@@ -259,10 +262,15 @@ int main(void)
   /* Set output power level */
   ret = aci_hal_set_tx_power_level(1,4);
 
+	uint8_t data[] = "!RRRRuuuuSSSSssss$";
+	HAL_StatusTypeDef Tx;
+	
   while(1)
   {
     HCI_Process();
     User_Process(&angles_data);
+		Tx = HAL_SPI_Transmit(&discoverySPIHandle, data, 18, 1);
+		data[1] += 1;
   }
 }
 
@@ -284,9 +292,7 @@ void User_Process(Angles_t* angles)
   if(BSP_PB_GetState(BUTTON_KEY) == RESET)
   {
     while (BSP_PB_GetState(BUTTON_KEY) == RESET);
-    
-      BSP_LED_Toggle(LED2); //used for debugging (BSP_LED_Init() above must be also enabled)
-    
+        
 //    if(connected)
 //    {
       /* Update acceleration data */
