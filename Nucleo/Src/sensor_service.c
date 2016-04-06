@@ -280,7 +280,7 @@ tBleStatus Add_LED_Service(void)
    * now add "LED service" to GATT server, service handle is returned
    * via 'ledServHandle' parameter of aci_gatt_add_serv() API. 
   */  
-  ret = aci_gatt_add_serv(UUID_TYPE_128, uuid, PRIMARY_SERVICE, 4,
+  ret = aci_gatt_add_serv(UUID_TYPE_128, uuid, PRIMARY_SERVICE, 8,
                           &ledServHandle);
   if (ret != BLE_STATUS_SUCCESS) goto fail;    
   
@@ -295,8 +295,21 @@ tBleStatus Add_LED_Service(void)
                            CHAR_PROP_WRITE | CHAR_PROP_WRITE_WITHOUT_RESP, ATTR_PERMISSION_NONE, GATT_NOTIFY_ATTRIBUTE_WRITE,
                            16, 1, &ledSpeedCharHandle);
   if (ret != BLE_STATUS_SUCCESS) goto fail;  
-  
-  PRINTF("Service LED BUTTON added. Handle 0x%04X, LED speed Charac handle: 0x%04X\n", ledServHandle, ledSpeedCharHandle);	
+
+  /* copy "LED intensity characteristic UUID" defined above to 'uuid' local variable */  
+  COPY_LED_INTENSITY_CHAR_UUID(uuid);
+  /* 
+   * now add "LED intensity characteristic" to LED service, characteristic handle 
+   * is returned via 'ledIntensityCharHandle' parameter of aci_gatt_add_char() API.
+   * This characteristic is writable, as specified by 'CHAR_PROP_WRITE' parameter.
+  */   
+  ret =  aci_gatt_add_char(ledServHandle, UUID_TYPE_128, uuid, 4,
+                           CHAR_PROP_WRITE | CHAR_PROP_WRITE_WITHOUT_RESP, ATTR_PERMISSION_NONE, GATT_NOTIFY_ATTRIBUTE_WRITE,
+                           16, 1, &ledIntensityCharHandle);
+  if (ret != BLE_STATUS_SUCCESS) goto fail;  
+
+
+	PRINTF("Service LED added. Handle 0x%04X, LED speed Charac handle: 0x%04X, LED intensity Charac handle: 0x%04X\n", ledServHandle, ledSpeedCharHandle, ledIntensityCharHandle);
   return BLE_STATUS_SUCCESS; 
   
 fail:
@@ -314,11 +327,10 @@ fail:
  */
 void Attribute_Modified_CB(uint16_t handle, uint8_t data_length, uint8_t *att_data)
 {
-  /* If GATT client has modified 'LED speed characteristic' value, toggle LED2 */
   if(handle == ledSpeedCharHandle + 1){
-			PRINTF("%x\n", att_data);
-			PRINTF("GOT WRITE\n");
-      BSP_LED_Toggle(LED2);
+			PRINTF("Got LED speed data: %d\n", *att_data);
+  } else if(handle == ledIntensityCharHandle + 1){
+			PRINTF("Got LED intensity data: %d\n", *att_data);
   }
 }
 
