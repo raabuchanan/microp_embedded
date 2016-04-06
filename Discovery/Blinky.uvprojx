@@ -487,6 +487,11 @@
               <FileType>1</FileType>
               <FilePath>.\Sources\nucleo_interface.c</FilePath>
             </File>
+            <File>
+              <FileName>Thread_pwm.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Thread_pwm.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -1043,6 +1048,11 @@
               <FileType>1</FileType>
               <FilePath>.\Sources\nucleo_interface.c</FilePath>
             </File>
+            <File>
+              <FileName>Thread_pwm.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Thread_pwm.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -1598,6 +1608,11 @@
               <FileName>nucleo_interface.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Sources\nucleo_interface.c</FilePath>
+            </File>
+            <File>
+              <FileName>Thread_pwm.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Thread_pwm.c</FilePath>
             </File>
           </Files>
         </Group>
