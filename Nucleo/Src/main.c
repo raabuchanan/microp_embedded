@@ -253,14 +253,14 @@ int main(void)
 
   while(1)
   {
-//		uint8_t data[] ={66,1,35,22};
+		uint8_t data[] ={66,1,35,22};
     HCI_Process();
     User_Process();
 		
-	//	update_discovery(data);
+		update_discovery(data);
 		
-//		data[1] +=1;
-
+		data[1] +=1;
+		HAL_Delay(50);
   }
 }
 

@@ -53,24 +53,24 @@ HAL_StatusTypeDef update_phone(uint32_t timeOut){
 	return updateStatus;
 }
 
-///*Polls for Data from Discovery*/
-//HAL_StatusTypeDef update_discovery(uint8_t* data){
-//	uint8_t pkg[10];
-//	HAL_StatusTypeDef txStatus;
-//	
-//	/*Build Package with leading '!' and terminating '$'*/
-//	pkg[0] = '!';
-//	pkg[1] = '!';
-//	pkg[2] = '!';
-//	pkg[3] = data[0];
-//	pkg[4] = data[1];
-//	pkg[5] = data[2];
-//	pkg[6] = data[3];
-//	pkg[7] = '$';
-//	pkg[8] = '$';
-//	pkg[9] = '$';
-//	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_10, GPIO_PIN_SET);
-//	txStatus = HAL_SPI_Transmit (&discoverySPIHandle, pkg, 10, 10);
-//	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_10, GPIO_PIN_RESET);
-//	return txStatus;
-//}
+/*Polls for Data from Discovery*/
+HAL_StatusTypeDef update_discovery(uint8_t* data){
+	uint8_t pkg[10];
+	HAL_StatusTypeDef txStatus;
+	
+	/*Build Package with leading '!' and terminating '$'*/
+	pkg[0] = '!';
+	pkg[1] = '!';
+	pkg[2] = '!';
+	pkg[3] = data[0];
+	pkg[4] = data[1];
+	pkg[5] = data[2];
+	pkg[6] = data[3];
+	pkg[7] = '$';
+	pkg[8] = '$';
+	pkg[9] = '$';
+	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_10, GPIO_PIN_SET);
+	txStatus = HAL_SPI_Transmit (&discoverySPIHandle, pkg, 10, 10);
+	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_10, GPIO_PIN_RESET);
+	return txStatus;
+}

@@ -64,11 +64,11 @@ HAL_StatusTypeDef send_pkg(uint32_t timeOut){
 
 
 /*Polls for Data from Nucleo*/
-HAL_StatusTypeDef recieve_pkg(void){
+HAL_StatusTypeDef receive_pkg(void){
 	HAL_StatusTypeDef updateStatus;
 	uint8_t data[PKG_SIZE];
 
-	updateStatus = HAL_SPI_Receive (&nucleoSPIHandle, data, PKG_SIZE, 10);
+	updateStatus = HAL_SPI_Receive (&nucleoSPIHandle, data, 10, 10);
 	
 //	for (int i=0;i<25;i++){
 //		if(data[i] == '!' && data[i+1] == '!' && data[i+2] == '!'){

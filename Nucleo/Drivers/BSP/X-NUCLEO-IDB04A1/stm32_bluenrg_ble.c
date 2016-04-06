@@ -235,14 +235,14 @@ void HAL_SPI_MspInit(SPI_HandleTypeDef* hspi)
     HAL_NVIC_SetPriority(EXTI4_IRQn, 4, 0);    
     HAL_NVIC_EnableIRQ(EXTI4_IRQn);
 		
-//		/* IRQ -- OUTPUT */
-//    GPIO_InitStruct.Pin = GPIO_PIN_10;
-//    GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-//    GPIO_InitStruct.Pull = GPIO_PULLDOWN;
-//    GPIO_InitStruct.Speed = GPIO_SPEED_HIGH;
-//    GPIO_InitStruct.Alternate = 0;
-//    HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-//		
+		/* IRQ -- OUTPUT */
+    GPIO_InitStruct.Pin = GPIO_PIN_10;
+    GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+    GPIO_InitStruct.Pull = GPIO_PULLDOWN;
+    GPIO_InitStruct.Speed = GPIO_SPEED_HIGH;
+    GPIO_InitStruct.Alternate = 0;
+    HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+		
 		
 	}
 }
