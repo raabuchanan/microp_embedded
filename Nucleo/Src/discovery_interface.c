@@ -44,7 +44,7 @@ HAL_StatusTypeDef update_phone(uint32_t timeOut){
 
 	updateStatus = HAL_SPI_Receive (&discoverySPIHandle, data, PKG_SIZE, 10);
 	
-	for (int i=0;i<=3;i++){
+	for (int i=0;i<3;i++){
 		if(data[i] == '!' && data[i+1] == '!' && data[i+2] == '!'){
 			Acc_Update(data+i+3);
 			Temp_Update(data+i+11);

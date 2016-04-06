@@ -122,7 +122,7 @@ int main (void) {
 	
 	while(1){
 		txStatus = send_pkg(1);
-		osDelay(10);
+		osDelay(500);
 	}
 	
 }
