@@ -37,7 +37,7 @@
   */
 /* Includes ------------------------------------------------------------------*/
 #include "bluenrg_interface.h"
-
+#include "discovery_interface.h"
 #include "debug.h"
 #include "ble_status.h"
 #include "hci.h"
@@ -52,7 +52,13 @@ extern SPI_HandleTypeDef SpiHandle;
  */
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
+	HAL_StatusTypeDef updateStatus;
+	if (GPIO_Pin == GPIO_PIN_4){
+		updateStatus = update_phone(100);
+	} else{
+		
   HCI_Isr();
+	}
 }
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

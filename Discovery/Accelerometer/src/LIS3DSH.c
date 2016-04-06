@@ -543,7 +543,7 @@ void HAL_SPI_MspInit(SPI_HandleTypeDef *hspi){
     /* MOSI */
     GPIO_InitStruct.Pin = GPIO_PIN_15;
     GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-    GPIO_InitStruct.Pull = GPIO_NOPULL; // PULLDOWN might work too
+    GPIO_InitStruct.Pull = GPIO_PULLDOWN; // PULLDOWN might work too
     GPIO_InitStruct.Speed = GPIO_SPEED_HIGH;
     GPIO_InitStruct.Alternate = GPIO_AF5_SPI2;
     HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
@@ -556,6 +556,26 @@ void HAL_SPI_MspInit(SPI_HandleTypeDef *hspi){
     GPIO_InitStruct.Alternate = 0;
     HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
     HAL_GPIO_WritePin(GPIOB, GPIO_PIN_6, GPIO_PIN_SET);
+
+		/* IRQ -- INPUT */
+    GPIO_InitStruct.Pin = GPIO_PIN_4;
+    GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
+    GPIO_InitStruct.Pull = GPIO_PULLDOWN;
+    GPIO_InitStruct.Speed = GPIO_SPEED_HIGH;
+    GPIO_InitStruct.Alternate = 0;
+    HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+		
+    /* Configure the NVIC for SPI */  
+    HAL_NVIC_SetPriority(EXTI4_IRQn, 4, 0);    
+    HAL_NVIC_EnableIRQ(EXTI4_IRQn);
+
+		/* IRQ -- OUTPUT */
+    GPIO_InitStruct.Pin = GPIO_PIN_5;
+    GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+    GPIO_InitStruct.Pull = GPIO_PULLDOWN;
+    GPIO_InitStruct.Speed = GPIO_SPEED_HIGH;
+    GPIO_InitStruct.Alternate = 0;
+    HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 		
 	}
 }

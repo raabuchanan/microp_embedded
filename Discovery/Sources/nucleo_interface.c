@@ -26,7 +26,7 @@ void nucleo_SPI_init(void)
   nucleoSPIHandle.Init.FirstBit = SPI_FIRSTBIT_MSB;
   nucleoSPIHandle.Init.TIMode = SPI_TIMODE_DISABLED;
   nucleoSPIHandle.Init.CRCPolynomial = 7;
-  nucleoSPIHandle.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_32; //too fast when we used 8. TODO: further testing
+  nucleoSPIHandle.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_256; //too fast when we used 8. TODO: further testing
   nucleoSPIHandle.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
   
   HAL_SPI_Init(&nucleoSPIHandle);
@@ -45,7 +45,7 @@ HAL_StatusTypeDef send_pkg(uint32_t timeOut){
 	uint8_t pkg[PKG_SIZE]; // = "abcdefghijklmnopqr";
 	HAL_StatusTypeDef txStatus;
 	
-//	/*Build Package with leading '!' and terminating '$'*/
+	/*Build Package with leading '!' and terminating '$'*/
 	pkg[0] = '!';
 	pkg[1] = '!';
 	pkg[2] = '!';
@@ -56,26 +56,28 @@ HAL_StatusTypeDef send_pkg(uint32_t timeOut){
 	pkg[PKG_SIZE-2] = '$';
 	pkg[PKG_SIZE-1] = '$';
 	
-	txStatus = HAL_SPI_Transmit (&nucleoSPIHandle, pkg, PKG_SIZE, timeOut);
-	
+	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, GPIO_PIN_SET);
+	txStatus = HAL_SPI_Transmit (&nucleoSPIHandle, pkg, PKG_SIZE, 10);
+	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, GPIO_PIN_RESET);
 	return txStatus;
 }
 
 
-///*Polls for Data from Nucleo*/
-//HAL_StatusTypeDef recieve_pkg(uint8_t* rxData, uint32_t timeOut){
-//	HAL_StatusTypeDef rxStatus;
-//	
-//	rxStatus = HAL_SPI_Receive (&nucleoSPIHandle, rxData, PKG_SIZE, timeOut);
-//	
-//	if (rxData[0] == '!' && rxData[PKG_SIZE-1] == '$'){
-//		for (int i = 0; i <PKG_SIZE; i++){
-//			
+/*Polls for Data from Nucleo*/
+HAL_StatusTypeDef recieve_pkg(void){
+	HAL_StatusTypeDef updateStatus;
+	uint8_t data[PKG_SIZE];
+
+	updateStatus = HAL_SPI_Receive (&nucleoSPIHandle, data, PKG_SIZE, 10);
+	
+//	for (int i=0;i<25;i++){
+//		if(data[i] == '!' && data[i+1] == '!' && data[i+2] == '!'){
+//			Acc_Update(data+i+3);
+//			Temp_Update(data+i+11);
 //		}
-//	}
-//	
-//	return rxStatus;
 //}
+	return updateStatus;
+}
 
 
 

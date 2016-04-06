@@ -78,6 +78,7 @@
  */
  extern void discovery_SPI_init(void);
  extern HAL_StatusTypeDef update_phone(uint32_t timeOut);
+ extern HAL_StatusTypeDef update_discovery(uint8_t* data);
 /* Private variables ---------------------------------------------------------*/
 extern volatile uint8_t set_connectable;
 extern volatile int connected;
@@ -128,7 +129,6 @@ int main(void)
   uint16_t service_handle, dev_name_char_handle, appearance_char_handle;
   uint8_t  hwVersion;
   uint16_t fwVersion;
-	HAL_StatusTypeDef updateStatus;
   
   int ret;  
   
@@ -253,10 +253,13 @@ int main(void)
 
   while(1)
   {
+//		uint8_t data[] ={66,1,35,22};
     HCI_Process();
     User_Process();
 		
-		updateStatus = update_phone(1);
+	//	update_discovery(data);
+		
+//		data[1] +=1;
 
   }
 }
@@ -276,11 +279,6 @@ void User_Process()
   }  
 
 }
-
-/**
- * @}
- */
- 
 /**
  * @}
  */

@@ -14,6 +14,7 @@
 #include "RTE_Components.h"             // Component selection
 #include "main.h"
 #include "nucleo_interface.h"
+#include "nucleo_interface.h"
 
 extern void initializeADC_IO			(void);
 extern void start_Thread_sevenseg			(void);
@@ -127,7 +128,12 @@ int main (void) {
 }
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
+	HAL_StatusTypeDef updateStatus;
+	if (GPIO_Pin==GPIO_PIN_4){
+		updateStatus = recieve_pkg();
+	} else{
 	osSignalSet(tid_Thread_angles, 1);
+	}
 }
 
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
