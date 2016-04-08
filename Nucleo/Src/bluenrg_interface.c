@@ -54,8 +54,10 @@ extern HAL_StatusTypeDef update_phone(uint32_t timeOut);
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
 	HAL_StatusTypeDef updateStatus;
-	if (GPIO_Pin == GPIO_PIN_4){// && !IS_TRANSMITTING){
-		updateStatus = update_phone(100);
+	if (GPIO_Pin == GPIO_PIN_4){
+		if(!IS_TRANSMITTING){
+			updateStatus = update_phone(100);
+		}
 	} else{
 		
   HCI_Isr();

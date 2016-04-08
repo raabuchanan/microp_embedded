@@ -13,7 +13,7 @@ SPI2_CS   -> orange
 SPI_HandleTypeDef nucleoSPIHandle;
 extern float filtered_temperature;
 extern float pitch, roll;
-uint8_t data[PKG_SIZE];
+uint8_t data[10];
 uint8_t pkg[PKG_SIZE]; // = "abcdefghijklmnopqr";
 int IS_TRANSMITTING = 0;
 
@@ -62,7 +62,7 @@ HAL_StatusTypeDef send_pkg(uint32_t timeOut){
 	
 	IS_TRANSMITTING = 1;
 	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, GPIO_PIN_SET);
-	txStatus = HAL_SPI_Transmit(&nucleoSPIHandle, pkg, PKG_SIZE,10);
+	txStatus = HAL_SPI_Transmit (&nucleoSPIHandle, pkg, PKG_SIZE,1);
 	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, GPIO_PIN_RESET);
 	IS_TRANSMITTING = 0;
 	

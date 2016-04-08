@@ -112,15 +112,17 @@ int main (void) {
 	initTimer(timHandleTypeDef);
 
 	/* Start the threads */
-	start_Thread_angles();
-	start_Thread_temperature();
+	//start_Thread_angles();
+//	start_Thread_temperature();
 	//start_Thread_sevenseg();
 	//start_Thread_keypad();
   
 	osKernelStart();  /* start thread execution*/
+	
 	nucleo_SPI_init();
+	
 	while(1){
-		txStatus = send_pkg(1);
+		//txStatus = send_pkg(1);
 		osDelay(500);
 	}
 	
@@ -128,8 +130,11 @@ int main (void) {
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
 	HAL_StatusTypeDef updateStatus;
-	if (GPIO_Pin==GPIO_PIN_4 && !IS_TRANSMITTING){
-		updateStatus = receive_pkg();
+	
+	if (GPIO_Pin==GPIO_PIN_4){
+		if(!IS_TRANSMITTING){
+			updateStatus = receive_pkg();
+		}
 	} else{
 		osSignalSet(tid_Thread_angles, 1);
 	}

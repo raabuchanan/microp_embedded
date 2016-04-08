@@ -27,7 +27,7 @@ void discovery_SPI_init(void)
   discoverySPIHandle.Init.FirstBit = SPI_FIRSTBIT_MSB;
   discoverySPIHandle.Init.TIMode = SPI_TIMODE_DISABLED;
   discoverySPIHandle.Init.CRCPolynomial = 7;
-  discoverySPIHandle.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_32; // shouldn't matter. Depends on master's clk rate
+  discoverySPIHandle.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_256; // shouldn't matter. Depends on master's clk rate
   discoverySPIHandle.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
   
   HAL_SPI_Init(&discoverySPIHandle);
@@ -45,7 +45,7 @@ void discovery_SPI_init(void)
 HAL_StatusTypeDef update_phone(uint32_t timeOut){
 	HAL_StatusTypeDef updateStatus;
 	
-	updateStatus = HAL_SPI_Receive (&discoverySPIHandle, data, PKG_SIZE,10);
+	updateStatus = HAL_SPI_Receive (&discoverySPIHandle, data, PKG_SIZE,1);
 	
 	for (int i=0;i<3;i++){
 		if(data[i] == '!' && data[i+1] == '!' && data[i+2] == '!'){
@@ -57,7 +57,7 @@ HAL_StatusTypeDef update_phone(uint32_t timeOut){
 }
 
 /*Polls for Data from Discovery*/
-HAL_StatusTypeDef update_discovery(uint8_t* data){
+HAL_StatusTypeDef update_discovery(uint8_t* txData){
 
 	HAL_StatusTypeDef txStatus;
 	
@@ -65,17 +65,17 @@ HAL_StatusTypeDef update_discovery(uint8_t* data){
 	pkg[0] = '!';
 	pkg[1] = '!';
 	pkg[2] = '!';
-	pkg[3] = data[0];
-	pkg[4] = data[1];
-	pkg[5] = data[2];
-	pkg[6] = data[3];
+	pkg[3] = txData[0];
+	pkg[4] = txData[1];
+	pkg[5] = txData[2];
+	pkg[6] = txData[3];
 	pkg[7] = '$';
 	pkg[8] = '$';
 	pkg[9] = '$';
 	
 	IS_TRANSMITTING = 1;
 	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_10, GPIO_PIN_SET);
-	txStatus = HAL_SPI_Transmit(&discoverySPIHandle, pkg, 10,100);
+	txStatus = HAL_SPI_Transmit(&discoverySPIHandle, pkg, 10,1);
 	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_10, GPIO_PIN_RESET);
 	IS_TRANSMITTING = 0;
 	
