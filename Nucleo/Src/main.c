@@ -250,16 +250,17 @@ int main(void)
 
   /* Set output power level */
   ret = aci_hal_set_tx_power_level(1,4);
-
+	
+	uint8_t test[4] ={66,1,35,22};
   while(1)
   {
-		uint8_t data[] ={66,1,35,22};
+		
     HCI_Process();
     User_Process();
 		
-		update_discovery(data);
+	//	update_discovery(test);
 		
-		data[1] +=1;
+		test[1] +=1;
 		HAL_Delay(50);
   }
 }

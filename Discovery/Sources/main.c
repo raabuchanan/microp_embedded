@@ -29,6 +29,7 @@ extern osThreadId tid_Thread_sevenseg;
 extern osThreadId tid_Thread_keypad;
 extern osThreadId tid_Thread_angles;
 extern SPI_HandleTypeDef nucleoSPIHandle;
+extern int IS_TRANSMITTING;
 
 TIM_HandleTypeDef* timHandleTypeDef;            /** timer handler to be initialized */
 osMutexId temp_mutex;														/** temperature mutex */
@@ -100,8 +101,6 @@ int main (void) {
 	/* Initialize GPIOs */
 		initGPIOs();
 
-		
-	
 	/* Initialize the ADC IO */
 		initializeADC_IO();
 
@@ -113,7 +112,7 @@ int main (void) {
 	initTimer(timHandleTypeDef);
 
 	/* Start the threads */
-//	start_Thread_angles();
+	start_Thread_angles();
 	start_Thread_temperature();
 	//start_Thread_sevenseg();
 	//start_Thread_keypad();
@@ -121,7 +120,7 @@ int main (void) {
 	osKernelStart();  /* start thread execution*/
 	nucleo_SPI_init();
 	while(1){
-		//txStatus = send_pkg(1);
+		txStatus = send_pkg(1);
 		osDelay(500);
 	}
 	
@@ -129,7 +128,7 @@ int main (void) {
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
 	HAL_StatusTypeDef updateStatus;
-	if (GPIO_Pin==GPIO_PIN_4){
+	if (GPIO_Pin==GPIO_PIN_4 && !IS_TRANSMITTING){
 		updateStatus = receive_pkg();
 	} else{
 		osSignalSet(tid_Thread_angles, 1);

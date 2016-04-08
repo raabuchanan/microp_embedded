@@ -41,6 +41,7 @@
 #include "main.h"
 #include "stm32f4xx_it.h"
 #include "lis3dsh.h"
+#include "nucleo_interface.h"
 
 /** @addtogroup STM32F4xx_HAL_Examples
   * @{
@@ -151,10 +152,12 @@ void EXTI0_IRQHandler(void)
 {
 	HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_0);
 }
+
 void EXTI4_IRQHandler(void)
 {
-	HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_4);
+		HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_4);
 }
+
 /**
  * @brief      The funciton handles the TIM3 timer IRQ Handler
  */

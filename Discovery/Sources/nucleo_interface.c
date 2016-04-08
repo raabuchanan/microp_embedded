@@ -13,6 +13,10 @@ SPI2_CS   -> orange
 SPI_HandleTypeDef nucleoSPIHandle;
 extern float filtered_temperature;
 extern float pitch, roll;
+uint8_t data[PKG_SIZE];
+uint8_t pkg[PKG_SIZE]; // = "abcdefghijklmnopqr";
+int IS_TRANSMITTING = 0;
+
 
 void nucleo_SPI_init(void)
 {
@@ -42,7 +46,7 @@ void nucleo_SPI_init(void)
 
 /*Collects Data and formats into package then sends to nucleo*/
 HAL_StatusTypeDef send_pkg(uint32_t timeOut){
-	uint8_t pkg[PKG_SIZE]; // = "abcdefghijklmnopqr";
+
 	HAL_StatusTypeDef txStatus;
 	
 	/*Build Package with leading '!' and terminating '$'*/
@@ -56,9 +60,12 @@ HAL_StatusTypeDef send_pkg(uint32_t timeOut){
 	pkg[PKG_SIZE-2] = '$';
 	pkg[PKG_SIZE-1] = '$';
 	
+	IS_TRANSMITTING = 1;
 	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, GPIO_PIN_SET);
-	txStatus = HAL_SPI_Transmit (&nucleoSPIHandle, pkg, PKG_SIZE, 10);
+	txStatus = HAL_SPI_Transmit(&nucleoSPIHandle, pkg, PKG_SIZE,10);
 	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, GPIO_PIN_RESET);
+	IS_TRANSMITTING = 0;
+	
 	return txStatus;
 }
 
@@ -66,9 +73,9 @@ HAL_StatusTypeDef send_pkg(uint32_t timeOut){
 /*Polls for Data from Nucleo*/
 HAL_StatusTypeDef receive_pkg(void){
 	HAL_StatusTypeDef updateStatus;
-	uint8_t data[PKG_SIZE];
+	
 
-	updateStatus = HAL_SPI_Receive (&nucleoSPIHandle, data, 10, 10);
+	updateStatus = HAL_SPI_Receive (&nucleoSPIHandle, data, 10,10);
 	
 //	for (int i=0;i<25;i++){
 //		if(data[i] == '!' && data[i+1] == '!' && data[i+2] == '!'){
