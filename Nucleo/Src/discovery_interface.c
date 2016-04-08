@@ -18,7 +18,7 @@ int IS_TRANSMITTING = 0;
 void discovery_SPI_init(void)
 {
   discoverySPIHandle.Instance = SPI2;
-  discoverySPIHandle.Init.Mode = SPI_MODE_SLAVE;
+  discoverySPIHandle.Init.Mode = SPI_MODE_MASTER;
   discoverySPIHandle.Init.Direction = SPI_DIRECTION_2LINES;
   discoverySPIHandle.Init.DataSize = SPI_DATASIZE_8BIT;
   discoverySPIHandle.Init.CLKPolarity = SPI_POLARITY_LOW;
@@ -75,6 +75,7 @@ HAL_StatusTypeDef update_discovery(uint8_t* txData){
 	
 	IS_TRANSMITTING = 1;
 	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_10, GPIO_PIN_SET);
+//	HAL_Delay(1);
 	txStatus = HAL_SPI_Transmit(&discoverySPIHandle, pkg, 10,1);
 	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_10, GPIO_PIN_RESET);
 	IS_TRANSMITTING = 0;

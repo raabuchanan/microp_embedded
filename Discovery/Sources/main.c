@@ -112,8 +112,8 @@ int main (void) {
 	initTimer(timHandleTypeDef);
 
 	/* Start the threads */
-	//start_Thread_angles();
-//	start_Thread_temperature();
+	start_Thread_angles();
+	start_Thread_temperature();
 	//start_Thread_sevenseg();
 	//start_Thread_keypad();
   
@@ -122,7 +122,7 @@ int main (void) {
 	nucleo_SPI_init();
 	
 	while(1){
-		//txStatus = send_pkg(1);
+		txStatus = send_pkg(1);
 		osDelay(500);
 	}
 	

@@ -21,7 +21,7 @@ int IS_TRANSMITTING = 0;
 void nucleo_SPI_init(void)
 {
   nucleoSPIHandle.Instance = SPI2;
-  nucleoSPIHandle.Init.Mode = SPI_MODE_MASTER;
+  nucleoSPIHandle.Init.Mode = SPI_MODE_SLAVE;
   nucleoSPIHandle.Init.Direction = SPI_DIRECTION_2LINES;
   nucleoSPIHandle.Init.DataSize = SPI_DATASIZE_8BIT;
   nucleoSPIHandle.Init.CLKPolarity = SPI_POLARITY_LOW;
@@ -75,7 +75,7 @@ HAL_StatusTypeDef receive_pkg(void){
 	HAL_StatusTypeDef updateStatus;
 	
 
-	updateStatus = HAL_SPI_Receive (&nucleoSPIHandle, data, 10,10);
+	updateStatus = HAL_SPI_Receive (&nucleoSPIHandle, data, 10,1);
 	
 //	for (int i=0;i<25;i++){
 //		if(data[i] == '!' && data[i+1] == '!' && data[i+2] == '!'){
@@ -85,6 +85,9 @@ HAL_StatusTypeDef receive_pkg(void){
 //}
 	return updateStatus;
 }
+
+
+
 
 
 
