@@ -261,7 +261,7 @@ int main(void)
 		update_discovery(test);
 		
 		test[1] +=1;
-		HAL_Delay(50);
+		HAL_Delay(500);
   }
 }
 

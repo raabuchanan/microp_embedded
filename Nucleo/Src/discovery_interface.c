@@ -1,15 +1,17 @@
+/**
+	******************************************************************************
+  * @file    discovery_interface.c
+  * @author  
+	* @version V1.0.0
+  * @date    
+  * @brief   
+  ******************************************************************************
+  */
+
 #include "discovery_interface.h"
 #include "main.h"
 #include "sensor_service.h"
 
-/*Nucleo wireing:
-
-SPI2_SCK  -> blue
-SPI2_MISO -> red
-SPI2_MOSI -> yellow
-SPI2_CS   -> orange
-
-*/
 SPI_HandleTypeDef discoverySPIHandle;
 uint8_t data[PKG_SIZE];
 uint8_t pkg[10];
@@ -17,31 +19,29 @@ int IS_TRANSMITTING = 0;
 
 void discovery_SPI_init(void)
 {
-  discoverySPIHandle.Instance = SPI2;
-  discoverySPIHandle.Init.Mode = SPI_MODE_MASTER;
-  discoverySPIHandle.Init.Direction = SPI_DIRECTION_2LINES;
+  discoverySPIHandle.Instance = SPI2; /*SPI2 is used since SPI1 is reserved for the accelerometer*/
+  discoverySPIHandle.Init.Mode = SPI_MODE_MASTER;/*The Nucleo is set as SPI Master*/
+  discoverySPIHandle.Init.Direction = SPI_DIRECTION_2LINES; /*Two-way communication with Discovery*/
   discoverySPIHandle.Init.DataSize = SPI_DATASIZE_8BIT;
   discoverySPIHandle.Init.CLKPolarity = SPI_POLARITY_LOW;
   discoverySPIHandle.Init.CLKPhase = SPI_PHASE_1EDGE;
-  discoverySPIHandle.Init.NSS = SPI_NSS_SOFT;
+  discoverySPIHandle.Init.NSS = SPI_NSS_SOFT;/*There is only one Master and one Slave*/
   discoverySPIHandle.Init.FirstBit = SPI_FIRSTBIT_MSB;
   discoverySPIHandle.Init.TIMode = SPI_TIMODE_DISABLED;
   discoverySPIHandle.Init.CRCPolynomial = 7;
-  discoverySPIHandle.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_256; // shouldn't matter. Depends on master's clk rate
+  discoverySPIHandle.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_256;/*Operating at lower speeds apear to improve communication*/
   discoverySPIHandle.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
   
   HAL_SPI_Init(&discoverySPIHandle);
 	
-//#ifdef OPTIMIZED_SPI /* used by the server (L0 and F4, not L4) for the throughput test */
-//  /* Added HAP to enable SPI since Optimized SPI Transmit, Receive and Transmit/Receive APIs are 
-//     used for BlueNRG, BlueNRG-MS SPI communication in order to get the best performance in terms of 
-//     BLE throughput */
-//  __HAL_SPI_ENABLE(&discoverySPIHandle);
-//#endif
 }
 
 
-/*Polls for Data from Discovery*/
+/* 
+	Recieves data from Discovery. Activated by interrpt callback
+  If data was successfully transmitted the phone is updated 
+	over bluetooth
+*/
 HAL_StatusTypeDef update_phone(uint32_t timeOut){
 	HAL_StatusTypeDef updateStatus;
 	
@@ -56,13 +56,11 @@ HAL_StatusTypeDef update_phone(uint32_t timeOut){
 	return updateStatus;
 }
 
-/*Polls for Data from Discovery*/
+/*Collects Data and formats into package then sends to discovery*/
 HAL_StatusTypeDef update_discovery(uint8_t* txData){
-
-	HAL_StatusTypeDef txStatus;
-	
-	/*Build Package with leading '!' and terminating '$'*/
-	pkg[0] = '!';
+	IS_TRANSMITTING = 1; /*Flag to prevent recieving from interupting*/
+	HAL_StatusTypeDef txStatus; 
+	pkg[0] = '!';/*Build Package with leading '!' and terminating '$'*/
 	pkg[1] = '!';
 	pkg[2] = '!';
 	pkg[3] = txData[0];
@@ -73,15 +71,11 @@ HAL_StatusTypeDef update_discovery(uint8_t* txData){
 	pkg[8] = '$';
 	pkg[9] = '$';
 	
-	IS_TRANSMITTING = 1;
-	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_10, GPIO_PIN_SET);
-//	HAL_Delay(1);
-	txStatus = HAL_SPI_Transmit(&discoverySPIHandle, pkg, 10,1);
+	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_10, GPIO_PIN_SET);/*Send signal on GPIO line to nucleo*/
+	txStatus = HAL_SPI_Transmit(&discoverySPIHandle, pkg, 10,1);/*Transmit Data*/
 	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_10, GPIO_PIN_RESET);
 	IS_TRANSMITTING = 0;
-	
-	
-	return txStatus;
+	return txStatus;/*HAL_OK indicates sucesful transmision*/
 }
 
 

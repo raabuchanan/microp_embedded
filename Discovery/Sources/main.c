@@ -89,8 +89,6 @@ void SystemClock_Config(void) {
   * Main function
   */
 int main (void) {
-	uint8_t data[18];
-	char test[8];
 
   osKernelInitialize();                     /* initialize CMSIS-RTOS          */
 
@@ -98,8 +96,6 @@ int main (void) {
 	
   SystemClock_Config();                     /* Configure the System Clock     */
 	
-	/* Initialize GPIOs */
-		initGPIOs();
 
 	/* Initialize the ADC IO */
 		initializeADC_IO();
@@ -114,8 +110,6 @@ int main (void) {
 	/* Start the threads */
 	start_Thread_angles();
 	start_Thread_temperature();
-	//start_Thread_sevenseg();
-	//start_Thread_keypad();
   
 	osKernelStart();  /* start thread execution*/
 	
@@ -123,7 +117,7 @@ int main (void) {
 	
 	while(1){
 		txStatus = send_pkg(1);
-		osDelay(500);
+		osDelay(50);
 	}
 	
 }

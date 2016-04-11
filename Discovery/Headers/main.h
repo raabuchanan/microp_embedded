@@ -14,7 +14,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 
-#include "gpio_init.h"
+
 #include "accel_init.h"
 #include "keypad.h"
 #include "sevenseg.h"
