@@ -161,6 +161,14 @@ void TIM3_IRQHandler(void)
 }
 
 /**
+ * @brief      The funciton handles the TIM3 timer IRQ Handler
+ */
+void TIM4_IRQHandler(void)
+{
+	HAL_TIM_IRQHandler(&PWM_config);
+}
+
+/**
   * @}
   */
 

@@ -490,7 +490,7 @@
             <File>
               <FileName>Thread_pwm.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\Thread_pwm.c</FilePath>
+              <FilePath>.\Sources\Thread_pwm.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1051,7 +1051,7 @@
             <File>
               <FileName>Thread_pwm.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\Thread_pwm.c</FilePath>
+              <FilePath>.\Sources\Thread_pwm.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1612,7 +1612,7 @@
             <File>
               <FileName>Thread_pwm.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\Thread_pwm.c</FilePath>
+              <FilePath>.\Sources\Thread_pwm.c</FilePath>
             </File>
           </Files>
         </Group>

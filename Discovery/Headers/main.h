@@ -30,5 +30,5 @@ typedef enum
 } DisplayMode;
 
 extern TIM_HandleTypeDef* timHandleTypeDef;
-
+extern TIM_HandleTypeDef    PWM_config;
 #endif
