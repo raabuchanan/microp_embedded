@@ -127,17 +127,17 @@ tBleStatus Add_Acc_Service(void)
   
   COPY_ROLL_CHAR_UUID(uuid);
   ret =  aci_gatt_add_char(accServHandle, UUID_TYPE_128, uuid, 4,
-                           CHAR_PROP_NOTIFY|CHAR_PROP_READ,
+                           CHAR_PROP_READ,
                            ATTR_PERMISSION_NONE,
-                           GATT_NOTIFY_READ_REQ_AND_WAIT_FOR_APPL_RESP,
+                           GATT_DONT_NOTIFY_EVENTS,
                            16, 0, &rollCharHandle);
   if (ret != BLE_STATUS_SUCCESS) goto fail;
   
   COPY_PITCH_CHAR_UUID(uuid);  
   ret =  aci_gatt_add_char(accServHandle, UUID_TYPE_128, uuid, 4,
-                           CHAR_PROP_NOTIFY|CHAR_PROP_READ,
+                           CHAR_PROP_READ,
                            ATTR_PERMISSION_NONE,
-                           GATT_NOTIFY_READ_REQ_AND_WAIT_FOR_APPL_RESP,
+                           GATT_DONT_NOTIFY_EVENTS,
                            16, 0, &pitchCharHandle);
   if (ret != BLE_STATUS_SUCCESS) goto fail;
   
@@ -193,7 +193,7 @@ tBleStatus Add_Temperature_Service(void)
   COPY_TEMP_CHAR_UUID(uuid);  
   ret =  aci_gatt_add_char(tempServHandle, UUID_TYPE_128, uuid, 4,
                            CHAR_PROP_READ, ATTR_PERMISSION_NONE,
-                           GATT_NOTIFY_READ_REQ_AND_WAIT_FOR_APPL_RESP,
+                           GATT_DONT_NOTIFY_EVENTS,
                            16, 0, &tempCharHandle);
   if (ret != BLE_STATUS_SUCCESS) goto fail;
   
