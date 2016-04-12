@@ -56,7 +56,6 @@ volatile int connected = FALSE;
 volatile uint8_t set_connectable = 1;
 volatile uint16_t connection_handle = 0;
 volatile uint8_t notification_enabled = FALSE;
-volatile Angles_t angles_data = {90.0f, 90.0f};
 uint16_t accServHandle, rollCharHandle, pitchCharHandle;
 uint16_t tempServHandle, tempCharHandle;
 uint16_t ledServHandle, ledSpeedCharHandle, ledIntensityCharHandle;
@@ -130,17 +129,17 @@ tBleStatus Add_Acc_Service(void)
   
   COPY_ROLL_CHAR_UUID(uuid);
   ret =  aci_gatt_add_char(accServHandle, UUID_TYPE_128, uuid, 4,
-                           CHAR_PROP_NOTIFY|CHAR_PROP_READ,
+                           CHAR_PROP_READ,
                            ATTR_PERMISSION_NONE,
-                           GATT_NOTIFY_READ_REQ_AND_WAIT_FOR_APPL_RESP,
+                           GATT_DONT_NOTIFY_EVENTS,
                            16, 0, &rollCharHandle);
   if (ret != BLE_STATUS_SUCCESS) goto fail;
   
   COPY_PITCH_CHAR_UUID(uuid);  
   ret =  aci_gatt_add_char(accServHandle, UUID_TYPE_128, uuid, 4,
-                           CHAR_PROP_NOTIFY|CHAR_PROP_READ,
+                           CHAR_PROP_READ,
                            ATTR_PERMISSION_NONE,
-                           GATT_NOTIFY_READ_REQ_AND_WAIT_FOR_APPL_RESP,
+                           GATT_DONT_NOTIFY_EVENTS,
                            16, 0, &pitchCharHandle);
   if (ret != BLE_STATUS_SUCCESS) goto fail;
   
@@ -159,19 +158,12 @@ fail:
  * @param  Structure containing angle values in degrees
  * @retval Status
  */
-tBleStatus Acc_Update(Angles_t *data)
+tBleStatus Acc_Update(uint8_t data[])
 {  
   tBleStatus ret;    
-  uint8_t buff[8];
-    
-  STORE_LE_32(buff, data->roll.i);
-  STORE_LE_32(buff+4, data->pitch.i);
-	
-	PRINTF("roll int: %d, float: %f\n", data->roll.i, data->roll.f);
-	PRINTF("pitch int: %d, float: %f\n", data->pitch.i, data->pitch.f);
-	
-  ret = aci_gatt_update_char_value(accServHandle, rollCharHandle, 0, 4, buff);
-	ret = aci_gatt_update_char_value(accServHandle, pitchCharHandle, 0, 4, buff+4);
+
+  ret = aci_gatt_update_char_value(accServHandle, rollCharHandle, 0, 4, data);
+	ret = aci_gatt_update_char_value(accServHandle, pitchCharHandle, 0, 4, data+4);
 	
   if (ret != BLE_STATUS_SUCCESS){
     PRINTF("Error while updating ACC characteristic.\n") ;
@@ -203,7 +195,7 @@ tBleStatus Add_Temperature_Service(void)
   COPY_TEMP_CHAR_UUID(uuid);  
   ret =  aci_gatt_add_char(tempServHandle, UUID_TYPE_128, uuid, 4,
                            CHAR_PROP_READ, ATTR_PERMISSION_NONE,
-                           GATT_NOTIFY_READ_REQ_AND_WAIT_FOR_APPL_RESP,
+                           GATT_DONT_NOTIFY_EVENTS,
                            16, 0, &tempCharHandle);
   if (ret != BLE_STATUS_SUCCESS) goto fail;
   
@@ -244,17 +236,13 @@ fail:
  * @param  Temperature in degrees 
  * @retval Status
  */
-tBleStatus Temp_Update(i32_t temp)
+tBleStatus Temp_Update(uint8_t temp_data[])
 {  
   tBleStatus ret;
-	uint8_t buff[4];
-    
-  STORE_LE_32(buff, temp);
-  
+
   ret = aci_gatt_update_char_value(tempServHandle, tempCharHandle, 0, 4,
-                                   buff);
+                                   temp_data);
   
-	PRINTF("temperature int: %d\n", temp);
   if (ret != BLE_STATUS_SUCCESS){
     PRINTF("Error while updating TEMP characteristic.\n") ;
     return BLE_STATUS_ERROR ;
@@ -410,22 +398,6 @@ void GAP_DisconnectionComplete_CB(void)
  */
 void Read_Request_CB(uint16_t handle)
 {  
-  if(handle == rollCharHandle + 1){
-    Acc_Update((Angles_t*)&angles_data);
-  }
-  if(handle == pitchCharHandle + 1){
-    Acc_Update((Angles_t*)&angles_data);
-  }  
-  else if(handle == tempCharHandle + 1){
-    f32_u data;
-    data.f = 210.0f + ((uint64_t)rand()*15)/RAND_MAX; //sensor emulation        
-    Acc_Update((Angles_t*)&angles_data); //FIXME: to overcome issue on Android App
-                                        // If the user button is not pressed within
-                                        // a short time after the connection,
-                                        // a pop-up reports a "No valid characteristics found" error.
-    Temp_Update(data.i);
-  }
-  
   //EXIT:
   if(connection_handle != 0)
     aci_gatt_allow_read(connection_handle);
