@@ -247,16 +247,30 @@ int main(void)
     PRINTF("Temperature service added successfully.\n");
   else
     PRINTF("Error while adding Temperature service.\n");
-
-	/* Instantiate LED Button Service with one characteristic:
-	 * - LED characteristic (Readable and Writable)
-	 */  
+	
+	/* Instantiate LED Service with w characteristics:
+	 * - LED Speed characteristic (Writable)
+	 * - LED Intensity characteristic (Writable)
+	 */
   ret = Add_LED_Service();
 
   if(ret == BLE_STATUS_SUCCESS)
     PRINTF("LED service added successfully.\n");
   else
     PRINTF("Error while adding LED service.\n");  
+
+	/* Instantiae Double Tap Service with a notify characteristic
+	 */
+  ret = Add_Double_Tap_Service();
+
+  if(ret == BLE_STATUS_SUCCESS)
+    PRINTF("Double Tap service added successfully.\n");
+  else
+    PRINTF("Error while adding Double Tap service.\n");  
+
+	/* Instantiate LED Button Service with one characteristic:
+	 * - LED characteristic (Readable and Writable)
+	 */  
 
   /* Set output power level */
   ret = aci_hal_set_tx_power_level(1,4);
