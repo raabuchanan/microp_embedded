@@ -117,6 +117,8 @@ int main (void) {
 	
 	nucleo_SPI_init();
 	
+	pwm_init();
+	
 	while(1){
 		txStatus = send_pkg(1);
 		osDelay(50);

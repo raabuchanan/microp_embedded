@@ -9,29 +9,13 @@
   */
 
 /* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef MAIN_H
-#define MAIN_H
+#ifndef PWM_H
+#define PWM_H
 
 /* Includes ------------------------------------------------------------------*/
+#include "stm32f4xx_hal.h"              // Keil::Device:STM32Cube HAL:Common
 
+void pwm_init(void);
 
-#include "accel_init.h"
-#include "keypad.h"
-#include "sevenseg.h"
-#include "math.h"
-#include "kalmanfilter_c.h"
-#include "timer.h"
-#include "pwm.h"
-
-#define PKG_SIZE 18
-
-typedef enum
-{
-	TEMPERATURE = 0x01,
-	PITCH = 0x02,
-	ROLL = 0x03
-} DisplayMode;
-
-extern TIM_HandleTypeDef* timHandleTypeDef;
 
 #endif
