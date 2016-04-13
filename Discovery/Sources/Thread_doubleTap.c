@@ -16,7 +16,7 @@
 
 void Thread_doubleTap(void const *argument);                  /** thread function */
 osThreadId tid_Thread_doubleTap;                               /** thread id */
-osThreadDef(Thread_doubleTap, osPriorityAboveNormal, 1, 0);  
+osThreadDef(Thread_doubleTap, osPriorityAboveNormal, 1, 250);  
 
 int readingIndex = 0;
 int i = 0;
@@ -76,7 +76,7 @@ int start_Thread_doubleTap (void) {
 			if(beginCountdown)
 				cyclePassed++;
 			test = filteredZ;
-			if(j<100)
+			if(j<10)
 			{				
 				globalAverageX[readingIndex%10] = filteredX;
 				globalAverageY[readingIndex%10] = filteredY;
@@ -149,7 +149,7 @@ int start_Thread_doubleTap (void) {
 							//then board returning to original position
 							/*if(fabs(filteredZ - average) < returnGap)
 								returnGap = fabs(filteredZ - average);*/
-							if(tappedTimer == 5)
+							if(tappedTimer > 5)
 								tappedTwice = 1;							
 						}
 						//If flagged twice, then double tap detected

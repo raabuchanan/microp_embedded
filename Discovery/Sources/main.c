@@ -25,6 +25,7 @@ extern int start_Thread_doubleTap			(void);
 extern osThreadId tid_Thread_temperature;
 extern osThreadId tid_Thread_angles;
 extern osThreadId tid_Thread_doubleTap; 
+extern osThreadId tid_Thread_LED; 
 
 extern int IS_TRANSMITTING;
 
@@ -104,8 +105,8 @@ int main (void) {
 	nucleo_SPI_init();
 	
 	/* Initialize the LEDs and PWM control */
-	LED_PWM_Init();
-	
+	//LED_PWM_Init();
+	LED_GPIO_Init();
 	/* Initialize timer */
 	timHandleTypeDef = malloc(sizeof(*timHandleTypeDef));
 	initTimer(timHandleTypeDef);
@@ -114,7 +115,7 @@ int main (void) {
 	start_Thread_angles();
 	start_Thread_temperature();
 	start_Thread_LED();
-  start_Thread_doubleTap();
+	start_Thread_doubleTap();
 	
 	/* start thread execution*/
 	osKernelStart();  
@@ -136,7 +137,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
 		}
 	} else{
 		osSignalSet(tid_Thread_angles, 1);
-		osSignalSet(tid_Thread_doubleTap, 1);
+		osSignalSet(tid_Thread_LED, 1);
 	}
 }
 

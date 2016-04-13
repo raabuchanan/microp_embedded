@@ -19,6 +19,6 @@
 #include "stm32f4xx_hal.h"
 
 void LED_GPIO_Init(void);
-
+void LED_GPIO_DeInit(void);
 
 #endif

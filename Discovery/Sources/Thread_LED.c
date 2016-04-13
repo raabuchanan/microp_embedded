@@ -15,9 +15,11 @@
 #include "led.h"
 
 void Thread_LED(void const *argument);                  /** thread function */
+void setAllLEDs(void);
+void unsetAllLEDs(void);
 osThreadId tid_Thread_LED;                               /** thread id */
 osThreadDef(Thread_LED, osPriorityBelowNormal, 1, 0);  
-
+extern int doubleTap;
 /**----------------------------------------------------------------------------
  *      Create the thread within RTOS context
  *---------------------------------------------------------------------------*/
@@ -35,11 +37,45 @@ int start_Thread_LED (void) {
 	{
 		
 		while(1){
-			/*************************************
-				         Temporary init
-			**************************************/
-			//osSignalWait(1, osWaitForever);
-			osDelay(50);
-			//osSignalClear(tid_Thread_LED, 1);
+			osSignalWait(1, osWaitForever);
+			if(doubleTap == 0)
+			{
+				LED_PWM_DeInit();
+				unsetAllLEDs();
+			}
+			else if (doubleTap == 1)
+			{	
+				LED_PWM_DeInit();
+				LED_GPIO_Init();
+				setAllLEDs();
+			}
+			else if (doubleTap == 2)
+			{
+				unsetAllLEDs();
+				LED_PWM_Init();
+			} 
+			//todo: Adjust speed of rotation
+			else if (doubleTap == 3)
+			{
+				unsetAllLEDs();
+				LED_PWM_Init();
+			} 
+			osSignalClear(tid_Thread_LED, 1);
 		}
 	}
+
+void setAllLEDs()
+{
+	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_12, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_13, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_14, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_15, GPIO_PIN_SET);
+}
+
+void unsetAllLEDs()
+{
+	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_12, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_13, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_14, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_15, GPIO_PIN_RESET);
+}

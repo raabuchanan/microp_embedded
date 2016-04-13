@@ -17,6 +17,7 @@
 
 void LED_PWM_Init(void);
 void drive_PWM_Init(void);
+void LED_PWM_DeInit(void);
 
 void set_green_pwm(uint32_t intensity);
 void set_orange_pwm(uint32_t intensity);
