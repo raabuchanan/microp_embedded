@@ -472,6 +472,16 @@
               <FileType>1</FileType>
               <FilePath>.\Sources\Thread_doubleTap.c</FilePath>
             </File>
+            <File>
+              <FileName>Thread_LED.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\Thread_LED.c</FilePath>
+            </File>
+            <File>
+              <FileName>led.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\led.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -531,6 +541,11 @@
               <FileName>pwm.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\Headers\pwm.h</FilePath>
+            </File>
+            <File>
+              <FileName>led.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Headers\led.h</FilePath>
             </File>
           </Files>
         </Group>
@@ -1008,6 +1023,16 @@
               <FileType>1</FileType>
               <FilePath>.\Sources\Thread_doubleTap.c</FilePath>
             </File>
+            <File>
+              <FileName>Thread_LED.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\Thread_LED.c</FilePath>
+            </File>
+            <File>
+              <FileName>led.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\led.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -1067,6 +1092,11 @@
               <FileName>pwm.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\Headers\pwm.h</FilePath>
+            </File>
+            <File>
+              <FileName>led.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Headers\led.h</FilePath>
             </File>
           </Files>
         </Group>
@@ -1544,6 +1574,16 @@
               <FileType>1</FileType>
               <FilePath>.\Sources\Thread_doubleTap.c</FilePath>
             </File>
+            <File>
+              <FileName>Thread_LED.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\Thread_LED.c</FilePath>
+            </File>
+            <File>
+              <FileName>led.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\led.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -1603,6 +1643,11 @@
               <FileName>pwm.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\Headers\pwm.h</FilePath>
+            </File>
+            <File>
+              <FileName>led.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Headers\led.h</FilePath>
             </File>
           </Files>
         </Group>
