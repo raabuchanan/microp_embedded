@@ -59,6 +59,7 @@ volatile uint8_t notification_enabled = FALSE;
 uint16_t accServHandle, rollCharHandle, pitchCharHandle;
 uint16_t tempServHandle, tempCharHandle;
 uint16_t ledServHandle, ledSpeedCharHandle, ledIntensityCharHandle;
+uint16_t doubleTapServHandle, doubleTapCharHandle;
 uint8_t ledState = 0;
 extern uint8_t bnrg_expansion_board;
 
@@ -252,7 +253,7 @@ tBleStatus Temp_Update(uint8_t temp_data[])
 }
 
 
-/*
+/**
  * @brief  Add LED button service using a vendor specific profile.
  * @param  None
  * @retval Status
@@ -304,6 +305,61 @@ fail:
   PRINTF("Error while adding LED service.\n");
   return BLE_STATUS_ERROR;
 }
+
+/**
+ * @brief  Add the double-tap service using a vendor specific profile.
+ *
+ * @param  None
+ * @retval tBleStatus Status
+ */
+tBleStatus Add_Double_Tap_Service(void)
+{
+  tBleStatus ret;
+
+  uint8_t uuid[16];
+  
+  COPY_DOUBLETAP_SERVICE_UUID(uuid);
+  ret = aci_gatt_add_serv(UUID_TYPE_128,  uuid, PRIMARY_SERVICE, 1,
+                          &doubleTapServHandle);
+  if (ret != BLE_STATUS_SUCCESS) goto fail;    
+  
+  COPY_DOUBLETAP_CHAR_UUID(uuid);
+  ret =  aci_gatt_add_char(doubleTapServHandle, UUID_TYPE_128, uuid, 1,
+                           CHAR_PROP_NOTIFY, ATTR_PERMISSION_NONE, 0,
+                           16, 0, &doubleTapCharHandle);
+  if (ret != BLE_STATUS_SUCCESS) goto fail;
+  
+  PRINTF("Service DT added. Handle 0x%04X, Double Charac handle: 0x%04X\n", doubleTapServHandle, doubleTapCharHandle);	
+  return BLE_STATUS_SUCCESS; 
+  
+fail:
+  PRINTF("Error while adding DT service.\n");
+  return BLE_STATUS_ERROR ;
+    
+}
+
+/**
+ * @brief  Send a notification for a Double Tap event.
+ *
+ * @param  None
+ * @retval tBleStatus Status
+ */
+tBleStatus Double_Tap_Notify(void)
+{  
+  uint8_t val;
+  tBleStatus ret;
+	
+  val = 0x01;	
+  ret = aci_gatt_update_char_value(doubleTapServHandle, doubleTapCharHandle, 0, 1,
+                                   &val);
+	
+  if (ret != BLE_STATUS_SUCCESS){
+    PRINTF("Error while updating DT characteristic.\n") ;
+    return BLE_STATUS_ERROR ;
+  }
+  return BLE_STATUS_SUCCESS;	
+}
+
 
 /**
  * @brief  This function is called attribute value corresponding to 
