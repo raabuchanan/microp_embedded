@@ -11,12 +11,6 @@
 
 #include "stm32f4xx_hal.h"
 
-/**
- * @brief      Initialize the hardware timer TIM3
- *
- * @param      timHandleTypeDef  the timer handle, which should be initialized
- * with enough memory
- */
 void initTimer(TIM_HandleTypeDef* timHandleTypeDef) {
 	TIM_Base_InitTypeDef timInitTypeDef;
 

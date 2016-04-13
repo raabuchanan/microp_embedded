@@ -13,8 +13,7 @@
 #include "cmsis_os.h"                   // ARM::CMSIS:RTOS:Keil RTX
 #include "RTE_Components.h"             // Component selection
 #include "main.h"
-#include "nucleo_interface.h"
-#include "nucleo_interface.h"
+
 
 extern void initializeADC_IO			(void);
 extern void start_Thread_sevenseg			(void);
@@ -30,14 +29,12 @@ extern osThreadId tid_Thread_sevenseg;
 extern osThreadId tid_Thread_keypad;
 extern osThreadId tid_Thread_angles;
 extern osThreadId tid_Thread_doubleTap; 
-extern SPI_HandleTypeDef nucleoSPIHandle;
 extern int IS_TRANSMITTING;
 
 TIM_HandleTypeDef* timHandleTypeDef;            /** timer handler to be initialized */
 osMutexId temp_mutex;														/** temperature mutex */
 osMutexId pitch_mutex;													/** pitch mutex */
 osMutexId roll_mutex;														/** roll mutex */
-SPI_HandleTypeDef SPI_Handle;
 HAL_StatusTypeDef txStatus;
 
 /**
@@ -92,19 +89,28 @@ void SystemClock_Config(void) {
   */
 int main (void) {
 	uint32_t intensity = 0;
-  osKernelInitialize();                     /* initialize CMSIS-RTOS          */
-
-  HAL_Init();                               /* Initialize the HAL Library     */
 	
-  SystemClock_Config();                     /* Configure the System Clock     */
-	
+	/* initialize CMSIS-RTOS */
+  osKernelInitialize();                     
 
+	/* Initialize the HAL Library */
+  HAL_Init();
+	
+	/* Configure the System Clock */
+  SystemClock_Config();                     
+	
 	/* Initialize the ADC IO */
-		initializeADC_IO();
+	initializeADC_IO();
 
 	/* Initialize the accelerometer configs */
-		initAccelerometers();
-
+	initAccelerometers();
+	
+	/* SPI communication with Nucleo Board */
+	nucleo_SPI_init();
+	
+	/* Initialize the LEDs and PWM control */
+	pwm_init_LEDs();
+	
 	/* Initialize timer */
 	timHandleTypeDef = malloc(sizeof(*timHandleTypeDef));
 	initTimer(timHandleTypeDef);
@@ -113,14 +119,14 @@ int main (void) {
 	start_Thread_angles();
 	start_Thread_temperature();
   start_Thread_doubleTap();
-	osKernelStart();  /* start thread execution*/
 	
-	nucleo_SPI_init();
+	/* start thread execution*/
+	osKernelStart();  
 	
-	pwm_init_LEDs();
+
 	
 	while(1){
-		txStatus = send_pkg(1);
+		txStatus = send_pkg();
 		
 		set_green_pwm(intensity);
 		set_orange_pwm(intensity);

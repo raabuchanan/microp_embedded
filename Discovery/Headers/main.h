@@ -16,12 +16,11 @@
 
 
 #include "accel_init.h"
-#include "keypad.h"
-#include "sevenseg.h"
 #include "math.h"
 #include "kalmanfilter_c.h"
 #include "timer.h"
 #include "pwm.h"
+#include "nucleo_interface.h"
 
 #define PKG_SIZE 18
 

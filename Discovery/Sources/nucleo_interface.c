@@ -41,7 +41,7 @@ void nucleo_SPI_init(void)
 
 
 /*Collects Data and formats into package then sends to nucleo*/
-HAL_StatusTypeDef send_pkg(uint32_t timeOut){
+HAL_StatusTypeDef send_pkg(void){
 
 	HAL_StatusTypeDef txStatus;
 	IS_TRANSMITTING = 1; /*Flag to prevent recieving from interupting*/
