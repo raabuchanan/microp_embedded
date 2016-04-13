@@ -91,7 +91,7 @@ void SystemClock_Config(void) {
   * Main function
   */
 int main (void) {
-
+	uint32_t intensity = 0;
   osKernelInitialize();                     /* initialize CMSIS-RTOS          */
 
   HAL_Init();                               /* Initialize the HAL Library     */
@@ -117,10 +117,17 @@ int main (void) {
 	
 	nucleo_SPI_init();
 	
-	pwm_init();
+	pwm_init_LEDs();
 	
 	while(1){
 		txStatus = send_pkg(1);
+		
+		set_green_pwm(intensity);
+		set_orange_pwm(intensity);
+		set_red_pwm(intensity);
+		set_blue_pwm(intensity);
+		
+		intensity +=1;
 		osDelay(50);
 	}
 	
