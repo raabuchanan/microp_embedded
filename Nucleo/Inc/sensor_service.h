@@ -108,6 +108,8 @@ typedef union {
 tBleStatus Add_Acc_Service(void);
 tBleStatus Acc_Update(uint8_t angles_data[]);
 tBleStatus Add_Temperature_Service(void);
+tBleStatus Add_LED_Service(void);
+tBleStatus Add_Double_Tap_Service(void);
 tBleStatus Temp_Update(uint8_t temp_data[]);
 void       setConnectable(void);
 void       enableNotification(void);
@@ -115,7 +117,6 @@ void       GAP_ConnectionComplete_CB(uint8_t addr[6], uint16_t handle);
 void       GAP_DisconnectionComplete_CB(void);
 void       HCI_Event_CB(void *pckt);
 
-tBleStatus Add_LED_Service(void);
 void       Attribute_Modified_CB(uint16_t handle, uint8_t data_length,
 																 uint8_t *att_data);
 
