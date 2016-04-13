@@ -16,7 +16,7 @@
 
 void Thread_doubleTap(void const *argument);                  /** thread function */
 osThreadId tid_Thread_doubleTap;                               /** thread id */
-osThreadDef(Thread_doubleTap, osPriorityAboveNormal, 1, 0);  /** thread definition with below normal priority and a stack size of 864 = 1.5 * 576 (max observed stack usage) */
+osThreadDef(Thread_doubleTap, osPriorityAboveNormal, 1, 0);  
 
 int readingIndex = 0;
 int i = 0;

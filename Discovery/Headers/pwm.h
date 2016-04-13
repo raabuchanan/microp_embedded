@@ -15,12 +15,15 @@
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f4xx_hal.h"              // Keil::Device:STM32Cube HAL:Common
 
-void pwm_init_LEDs(void);
+void LED_PWM_Init(void);
+void drive_PWM_Init(void);
 
 void set_green_pwm(uint32_t intensity);
 void set_orange_pwm(uint32_t intensity);
 void set_red_pwm(uint32_t intensity);
 void set_blue_pwm(uint32_t intensity);
 
+void set_drive_left(uint32_t intensity);
+void set_drive_right(uint32_t intensity);
 
 #endif

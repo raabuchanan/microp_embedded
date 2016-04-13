@@ -18,17 +18,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f4xx_hal.h"
 
-typedef enum
-{
-	CLOCKWISE = 1,
-	ANTICLOCKWISE = 2,
-	PWM = 3,
-	OFF = 4,
-} ledMode;
+void LED_GPIO_Init(void);
 
-/**
- * @brief      Reset all LEDs
- */
-void ResetLEDs(void);
 
 #endif
