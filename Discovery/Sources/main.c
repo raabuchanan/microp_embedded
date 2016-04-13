@@ -136,7 +136,6 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
 		}
 	} else{
 		osSignalSet(tid_Thread_angles, 1);
-		osSignalSet(tid_Thread_doubleTap, 1);
 	}
 }
 

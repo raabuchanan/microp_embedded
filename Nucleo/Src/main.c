@@ -261,7 +261,7 @@ int main(void)
   /* Set output power level */
   ret = aci_hal_set_tx_power_level(1,4);
 	
-	uint8_t test[4] ={0,1,35,255}; //green, orange, red, blue
+	uint8_t test[5] ={0,1,35,255,10}; //green, orange, red, blue, speed
   while(1)
   {
 		
