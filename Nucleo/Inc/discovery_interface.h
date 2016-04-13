@@ -7,7 +7,7 @@
 #include "stm32f4xx_hal.h"
 
 void discovery_SPI_init(void);
-HAL_StatusTypeDef update_phone(uint32_t timeOut);
+HAL_StatusTypeDef update_phone(void);
 	 
 #endif
 

@@ -22,7 +22,7 @@
 #include "pwm.h"
 #include "nucleo_interface.h"
 
-#define PKG_SIZE 18
+#define PKG_SIZE 19
 
 typedef enum
 {

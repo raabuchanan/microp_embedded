@@ -41,10 +41,9 @@
 #include "ble_status.h"
 #include "hci.h"
 #include "stm32_bluenrg_ble.h"
+#include "discovery_interface.h"
 
-extern SPI_HandleTypeDef SpiHandle;
 extern int IS_TRANSMITTING;
-extern HAL_StatusTypeDef update_phone(uint32_t timeOut);
 
 /**
  * @brief  EXTI line detection callback.
@@ -56,7 +55,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 	HAL_StatusTypeDef updateStatus;
 	if (GPIO_Pin == GPIO_PIN_4){
 		if(!IS_TRANSMITTING){
-			updateStatus = update_phone(100);
+			updateStatus = update_phone();
 		}
 	} else{
 		

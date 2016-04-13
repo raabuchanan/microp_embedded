@@ -15,9 +15,12 @@
 SPI_HandleTypeDef nucleoSPIHandle;
 extern float filtered_temperature;
 extern float pitch, roll;
+extern int tappedTwice;
 uint8_t data[10];
 uint8_t pkg[PKG_SIZE];
 int IS_TRANSMITTING = 0;
+int RXCounter = 0;
+int successfulRX = 0;
 
 
 void nucleo_SPI_init(void)
@@ -51,6 +54,7 @@ HAL_StatusTypeDef send_pkg(void){
 	convertFloatToBytes(pkg+3, roll);
 	convertFloatToBytes(pkg+7, pitch);
 	convertFloatToBytes(pkg+11, filtered_temperature);
+	pkg[PKG_SIZE-4] = tappedTwice;
 	pkg[PKG_SIZE-3] = '$';
 	pkg[PKG_SIZE-2] = '$';
 	pkg[PKG_SIZE-1] = '$';
@@ -66,15 +70,20 @@ HAL_StatusTypeDef send_pkg(void){
 /* Recieves data from nucleo. Activated by interrpt callback*/
 HAL_StatusTypeDef receive_pkg(void){
 	HAL_StatusTypeDef updateStatus;
+	int i;
+	RXCounter ++;
 	
 	updateStatus = HAL_SPI_Receive (&nucleoSPIHandle, data, 10,1);
 	
-//	for (int i=0;i<25;i++){
-//		if(data[i] == '!' && data[i+1] == '!' && data[i+2] == '!'){
-//			Acc_Update(data+i+3);
-//			Temp_Update(data+i+11);
-//		}
-//}
+	for (i=0;i<3;i++){
+		if(data[i] == '!' && data[i+1] == '!' && data[i+2] == '!'){
+			set_green_pwm(data[i+3]);
+		  set_orange_pwm(data[i+4]);
+		  set_red_pwm(data[i+5]);
+			set_blue_pwm(data[i+6]);
+			successfulRX ++;
+		}
+	}
 	return updateStatus;
 }
 

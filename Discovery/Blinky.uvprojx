@@ -428,29 +428,9 @@
               <FilePath>.\Sources\accel_init.c</FilePath>
             </File>
             <File>
-              <FileName>gpio_init.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\gpio_init.c</FilePath>
-            </File>
-            <File>
               <FileName>kalmanfilter_c.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Sources\kalmanfilter_c.c</FilePath>
-            </File>
-            <File>
-              <FileName>sevenseg.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\sevenseg.c</FilePath>
-            </File>
-            <File>
-              <FileName>Thread_keypad.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\Thread_keypad.c</FilePath>
-            </File>
-            <File>
-              <FileName>Thread_sevenseg.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\Thread_sevenseg.c</FilePath>
             </File>
             <File>
               <FileName>Thread_temperature.c</FileName>
@@ -468,11 +448,6 @@
               <FilePath>.\Sources\util.c</FilePath>
             </File>
             <File>
-              <FileName>keypad.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\keypad.c</FilePath>
-            </File>
-            <File>
               <FileName>stm32f4xx_it.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Sources\stm32f4xx_it.c</FilePath>
@@ -486,6 +461,16 @@
               <FileName>nucleo_interface.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Sources\nucleo_interface.c</FilePath>
+            </File>
+            <File>
+              <FileName>pwm.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\pwm.c</FilePath>
+            </File>
+            <File>
+              <FileName>Thread_doubleTap.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\Thread_doubleTap.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -508,29 +493,14 @@
               <FilePath>.\Headers\accel_init.h</FilePath>
             </File>
             <File>
-              <FileName>gpio_init.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\Headers\gpio_init.h</FilePath>
-            </File>
-            <File>
               <FileName>kalmanfilter_c.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\Headers\kalmanfilter_c.h</FilePath>
             </File>
             <File>
-              <FileName>keypad.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\Headers\keypad.h</FilePath>
-            </File>
-            <File>
               <FileName>main.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\Headers\main.h</FilePath>
-            </File>
-            <File>
-              <FileName>sevenseg.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\Headers\sevenseg.h</FilePath>
             </File>
             <File>
               <FileName>stm32f4xx_it.h</FileName>
@@ -551,6 +521,16 @@
               <FileName>util.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\Headers\util.h</FilePath>
+            </File>
+            <File>
+              <FileName>nucleo_interface.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Headers\nucleo_interface.h</FilePath>
+            </File>
+            <File>
+              <FileName>pwm.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Headers\pwm.h</FilePath>
             </File>
           </Files>
         </Group>
@@ -984,29 +964,9 @@
               <FilePath>.\Sources\accel_init.c</FilePath>
             </File>
             <File>
-              <FileName>gpio_init.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\gpio_init.c</FilePath>
-            </File>
-            <File>
               <FileName>kalmanfilter_c.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Sources\kalmanfilter_c.c</FilePath>
-            </File>
-            <File>
-              <FileName>sevenseg.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\sevenseg.c</FilePath>
-            </File>
-            <File>
-              <FileName>Thread_keypad.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\Thread_keypad.c</FilePath>
-            </File>
-            <File>
-              <FileName>Thread_sevenseg.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\Thread_sevenseg.c</FilePath>
             </File>
             <File>
               <FileName>Thread_temperature.c</FileName>
@@ -1024,11 +984,6 @@
               <FilePath>.\Sources\util.c</FilePath>
             </File>
             <File>
-              <FileName>keypad.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\keypad.c</FilePath>
-            </File>
-            <File>
               <FileName>stm32f4xx_it.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Sources\stm32f4xx_it.c</FilePath>
@@ -1042,6 +997,16 @@
               <FileName>nucleo_interface.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Sources\nucleo_interface.c</FilePath>
+            </File>
+            <File>
+              <FileName>pwm.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\pwm.c</FilePath>
+            </File>
+            <File>
+              <FileName>Thread_doubleTap.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\Thread_doubleTap.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1064,29 +1029,14 @@
               <FilePath>.\Headers\accel_init.h</FilePath>
             </File>
             <File>
-              <FileName>gpio_init.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\Headers\gpio_init.h</FilePath>
-            </File>
-            <File>
               <FileName>kalmanfilter_c.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\Headers\kalmanfilter_c.h</FilePath>
             </File>
             <File>
-              <FileName>keypad.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\Headers\keypad.h</FilePath>
-            </File>
-            <File>
               <FileName>main.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\Headers\main.h</FilePath>
-            </File>
-            <File>
-              <FileName>sevenseg.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\Headers\sevenseg.h</FilePath>
             </File>
             <File>
               <FileName>stm32f4xx_it.h</FileName>
@@ -1107,6 +1057,16 @@
               <FileName>util.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\Headers\util.h</FilePath>
+            </File>
+            <File>
+              <FileName>nucleo_interface.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Headers\nucleo_interface.h</FilePath>
+            </File>
+            <File>
+              <FileName>pwm.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Headers\pwm.h</FilePath>
             </File>
           </Files>
         </Group>
@@ -1540,29 +1500,9 @@
               <FilePath>.\Sources\accel_init.c</FilePath>
             </File>
             <File>
-              <FileName>gpio_init.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\gpio_init.c</FilePath>
-            </File>
-            <File>
               <FileName>kalmanfilter_c.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Sources\kalmanfilter_c.c</FilePath>
-            </File>
-            <File>
-              <FileName>sevenseg.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\sevenseg.c</FilePath>
-            </File>
-            <File>
-              <FileName>Thread_keypad.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\Thread_keypad.c</FilePath>
-            </File>
-            <File>
-              <FileName>Thread_sevenseg.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\Thread_sevenseg.c</FilePath>
             </File>
             <File>
               <FileName>Thread_temperature.c</FileName>
@@ -1580,11 +1520,6 @@
               <FilePath>.\Sources\util.c</FilePath>
             </File>
             <File>
-              <FileName>keypad.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\keypad.c</FilePath>
-            </File>
-            <File>
               <FileName>stm32f4xx_it.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Sources\stm32f4xx_it.c</FilePath>
@@ -1598,6 +1533,16 @@
               <FileName>nucleo_interface.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Sources\nucleo_interface.c</FilePath>
+            </File>
+            <File>
+              <FileName>pwm.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\pwm.c</FilePath>
+            </File>
+            <File>
+              <FileName>Thread_doubleTap.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\Thread_doubleTap.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1620,29 +1565,14 @@
               <FilePath>.\Headers\accel_init.h</FilePath>
             </File>
             <File>
-              <FileName>gpio_init.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\Headers\gpio_init.h</FilePath>
-            </File>
-            <File>
               <FileName>kalmanfilter_c.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\Headers\kalmanfilter_c.h</FilePath>
             </File>
             <File>
-              <FileName>keypad.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\Headers\keypad.h</FilePath>
-            </File>
-            <File>
               <FileName>main.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\Headers\main.h</FilePath>
-            </File>
-            <File>
-              <FileName>sevenseg.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\Headers\sevenseg.h</FilePath>
             </File>
             <File>
               <FileName>stm32f4xx_it.h</FileName>
@@ -1663,6 +1593,16 @@
               <FileName>util.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\Headers\util.h</FilePath>
+            </File>
+            <File>
+              <FileName>nucleo_interface.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Headers\nucleo_interface.h</FilePath>
+            </File>
+            <File>
+              <FileName>pwm.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Headers\pwm.h</FilePath>
             </File>
           </Files>
         </Group>

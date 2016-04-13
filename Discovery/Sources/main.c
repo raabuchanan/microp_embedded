@@ -88,7 +88,6 @@ void SystemClock_Config(void) {
   * Main function
   */
 int main (void) {
-	uint32_t intensity = 0;
 	
 	/* initialize CMSIS-RTOS */
   osKernelInitialize();                     
@@ -128,12 +127,6 @@ int main (void) {
 	while(1){
 		txStatus = send_pkg();
 		
-		set_green_pwm(intensity);
-		set_orange_pwm(intensity);
-		set_red_pwm(intensity);
-		set_blue_pwm(intensity);
-		
-		intensity +=1;
 		osDelay(50);
 	}
 	
