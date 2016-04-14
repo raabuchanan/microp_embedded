@@ -301,6 +301,14 @@ void User_Process()
     set_connectable = FALSE;
   }  
 
+	 /* Check if the user has pushed the button */
+  if(BSP_PB_GetState(BUTTON_KEY) == RESET)
+  {
+    while (BSP_PB_GetState(BUTTON_KEY) == RESET);
+    
+    PRINTF("BUTTON PRESSED\n");
+		Double_Tap_Notify();
+  }
 }
 /**
  * @}

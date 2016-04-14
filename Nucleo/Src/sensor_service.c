@@ -324,7 +324,7 @@ tBleStatus Add_Double_Tap_Service(void)
   if (ret != BLE_STATUS_SUCCESS) goto fail;    
   
   COPY_DOUBLETAP_CHAR_UUID(uuid);
-  ret =  aci_gatt_add_char(doubleTapServHandle, UUID_TYPE_128, uuid, 1,
+  ret =  aci_gatt_add_char(doubleTapServHandle, UUID_TYPE_128, uuid, 4,
                            CHAR_PROP_NOTIFY, ATTR_PERMISSION_NONE, 0,
                            16, 0, &doubleTapCharHandle);
   if (ret != BLE_STATUS_SUCCESS) goto fail;
