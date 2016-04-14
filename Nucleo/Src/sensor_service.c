@@ -373,6 +373,8 @@ void Attribute_Modified_CB(uint16_t handle, uint8_t data_length, uint8_t *att_da
 {
   if(handle == ledSpeedCharHandle + 1){
 		//TODO: Send data to discovery
+		uint8_t test[5] ={0,1,35,255, *att_data};
+		update_discovery(test);
 		PRINTF("Got LED speed data0: %x\n", *att_data);
 		PRINTF("Got LED speed data1: %x\n", *(att_data+1));
 		PRINTF("Got LED speed data2: %x\n", *(att_data+2));

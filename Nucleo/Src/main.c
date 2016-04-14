@@ -282,9 +282,9 @@ int main(void)
     HCI_Process();
     User_Process();
 		
-		update_discovery(test);
-		
-		test[1] +=1;
+//		update_discovery(test);
+//		
+//		test[1] +=1;
 		HAL_Delay(50);
   }
 }
