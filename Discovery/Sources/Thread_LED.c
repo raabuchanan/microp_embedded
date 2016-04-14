@@ -17,14 +17,17 @@
 void Thread_LED(void const *argument);                  /** thread function */
 void setAllLEDs(void);
 void unsetAllLEDs(void);
-void rotateRight(int speed);
-void rotateLeft(int speed);
+void rotateRight(int delay);
+void rotateLeft(int delay);
+void setIntensity(int intensity);
+void rotate(void);
 osThreadId tid_Thread_LED;                               /** thread id */
 osThreadDef(Thread_LED, osPriorityBelowNormal, 1, 0);  
 uint16_t currentPin =  0;
 int scaledSpeed = 0;
-extern int doubleTap;
+extern int doubleTap, speed, intensity;
 extern float pitch, roll;
+
 /**----------------------------------------------------------------------------
  *      Create the thread within RTOS context
  *---------------------------------------------------------------------------*/
@@ -43,29 +46,18 @@ int start_Thread_LED (void) {
 		currentPin = GPIO_PIN_12;
 		while(1){
 			osSignalWait(1, osWaitForever);
-			if (pitch > 90)
+			if (speed == 0)
 			{	
+				LED_PWM_Init();
+				setIntensity(intensity);
+			}
+			else
+			{
 				LED_PWM_DeInit();
 				LED_GPIO_Init();
-				setAllLEDs();
-			}
-			else if (roll > 90)
-			{
-				unsetAllLEDs();
+				rotate();
 				//LED_GPIO_DeInit();
 				LED_PWM_Init();
-			} 
-			else if (pitch < 90)
-			{
-				LED_PWM_DeInit();
-				LED_GPIO_Init();
-				rotateLeft(10);
-			} 
-			else if (roll < 90)
-			{
-				LED_PWM_DeInit();
-				LED_GPIO_Init();
-				rotateRight(1);
 			} 
 			osSignalClear(tid_Thread_LED, 1);
 		}
@@ -87,10 +79,20 @@ void unsetAllLEDs()
 	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_15, GPIO_PIN_RESET);
 }
 
-void rotateLeft(int speed)
+void rotate()
 {
-	scaledSpeed = ((11-speed)*MAXSPEED)/10;
-	osDelay(scaledSpeed);
+	scaledSpeed = speed%10;
+	scaledSpeed = ((11-scaledSpeed)*MAXSPEED)/10;
+	
+	if(speed > 10)
+		rotateLeft(scaledSpeed);
+	else if(speed < 10)
+		rotateRight(scaledSpeed);
+}
+
+void rotateLeft(int delay)
+{
+	osDelay(delay);
 	switch (currentPin)
 	{
 		case GPIO_PIN_12:
@@ -116,10 +118,9 @@ void rotateLeft(int speed)
 	}
 }
 
-void rotateRight(int speed)
+void rotateRight(int delay)
 {
-	scaledSpeed = ((10-speed)*MAXSPEED)/10;
-	osDelay(scaledSpeed);
+	osDelay(delay);
 	switch (currentPin)
 	{
 		case GPIO_PIN_12:
@@ -143,4 +144,12 @@ void rotateRight(int speed)
 			currentPin = GPIO_PIN_14;
 			break;
 	}
+}
+
+void setIntensity(int intensity)
+{
+	set_green_pwm(intensity);
+	set_orange_pwm(intensity);
+	set_red_pwm(intensity);
+	set_blue_pwm(intensity);
 }
