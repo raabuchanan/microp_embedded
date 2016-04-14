@@ -15,7 +15,7 @@
 SPI_HandleTypeDef nucleoSPIHandle;
 extern float filtered_temperature;
 extern float pitch, roll;
-extern int tappedTwice;
+extern int doubleTapFlag;
 uint8_t data[RX_PKG_SIZE];
 uint8_t pkg[TX_PKG_SIZE];
 int IS_TRANSMITTING = 0;
@@ -55,16 +55,16 @@ HAL_StatusTypeDef send_pkg(void){
 	convertFloatToBytes(pkg+3, roll);
 	convertFloatToBytes(pkg+7, pitch);
 	convertFloatToBytes(pkg+11, filtered_temperature);
-	pkg[TX_PKG_SIZE-4] = tappedTwice;
+	pkg[TX_PKG_SIZE-4] = doubleTapFlag;
 	pkg[TX_PKG_SIZE-3] = '$';
 	pkg[TX_PKG_SIZE-2] = '$';
 	pkg[TX_PKG_SIZE-1] = '$';
-	
 	
 	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, GPIO_PIN_SET);/*Send signal on GPIO line to nucleo*/
 	txStatus = HAL_SPI_Transmit (&nucleoSPIHandle, pkg, TX_PKG_SIZE,1); /*Transmit Data*/
 	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, GPIO_PIN_RESET);
 	IS_TRANSMITTING = 0;
+	doubleTapFlag = 0;
 	return txStatus;/*HAL_OK indicates sucesful transmision*/
 }
 

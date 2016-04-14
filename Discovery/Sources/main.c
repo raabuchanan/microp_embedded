@@ -105,8 +105,9 @@ int main (void) {
 	nucleo_SPI_init();
 	
 	/* Initialize the LEDs and PWM control */
-	//LED_PWM_Init();
-	LED_GPIO_Init();
+	LED_PWM_Init();
+	//LED_GPIO_Init();
+	
 	/* Initialize timer */
 	timHandleTypeDef = malloc(sizeof(*timHandleTypeDef));
 	initTimer(timHandleTypeDef);
@@ -114,7 +115,7 @@ int main (void) {
 	/* Start the threads */
 	start_Thread_angles();
 	start_Thread_temperature();
-	start_Thread_LED();
+	//start_Thread_LED();
 	start_Thread_doubleTap();
 	
 	/* start thread execution*/
@@ -137,7 +138,6 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
 		}
 	} else{
 		osSignalSet(tid_Thread_angles, 1);
-
 		osSignalSet(tid_Thread_LED, 1);
 
 	}

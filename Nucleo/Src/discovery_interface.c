@@ -15,6 +15,8 @@
 SPI_HandleTypeDef discoverySPIHandle;
 uint8_t data[RX_PKG_SIZE];
 uint8_t pkg[TX_PKG_SIZE];
+extern uint8_t LEDIntensity;
+extern uint8_t LEDSpeed;
 int IS_TRANSMITTING = 0;
 int RXCounter = 0;
 int successfulRX = 0;
@@ -44,6 +46,7 @@ void discovery_SPI_init(void)
   If data was successfully transmitted the phone is updated 
 	over bluetooth
 */
+int doubleTapTest = 0;
 HAL_StatusTypeDef update_phone(void){
 	HAL_StatusTypeDef updateStatus;
 	RXCounter ++;
@@ -51,8 +54,15 @@ HAL_StatusTypeDef update_phone(void){
 	
 	for (int i=0;i<3;i++){
 		if(data[i] == '!' && data[i+1] == '!' && data[i+2] == '!'){
+			
 			Acc_Update(data+i+3);
 			Temp_Update(data+i+11);
+			
+			if (data[i+15]==0x01){
+				Double_Tap_Notify();
+				doubleTapTest ++;
+			}
+			
 			successfulRX++;
 		}
 }
@@ -60,17 +70,17 @@ HAL_StatusTypeDef update_phone(void){
 }
 
 /*Collects Data and formats into package then sends to discovery*/
-HAL_StatusTypeDef update_discovery(uint8_t* txData){
+HAL_StatusTypeDef update_discovery(void){
 	IS_TRANSMITTING = 1; /*Flag to prevent recieving from interupting*/
 	HAL_StatusTypeDef txStatus; 
 	pkg[0]  = '!';/*Build Package with leading '!' and terminating '$'*/
 	pkg[1]  = '!';
 	pkg[2]  = '!';
-	pkg[3]  = txData[0];
-	pkg[4]  = txData[1];
-	pkg[5]  = txData[2];
-	pkg[6]  = txData[3];
-	pkg[7]  = txData[4];
+	pkg[3]  = LEDIntensity;
+	pkg[4]  = LEDIntensity;
+	pkg[5]  = LEDIntensity;
+	pkg[6]  = LEDIntensity;
+	pkg[7]  = LEDSpeed;
 	pkg[8]  = '$';
 	pkg[9]  = '$';
 	pkg[10] = '$';
