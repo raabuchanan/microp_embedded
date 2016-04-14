@@ -37,11 +37,13 @@ int start_Thread_drive (void) {
  *---------------------------------------------------------------------------*/
 	void Thread_drive(void const *argument) 
 	{
+		int test = 0;
 		drive_PWM_Init();
 		while(1){
 			motorSpeed = (int)roll;
-			set_drive_left(motorSpeed);
-			set_drive_right(motorSpeed);
-			osDelay(50);
+			set_drive_left(test);
+			set_drive_right(test);
+			osDelay(500);
+			test ++;
 		}
 	}
