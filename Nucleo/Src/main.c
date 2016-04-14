@@ -289,8 +289,6 @@ int main(void)
 /**
  * @brief  Process user input (i.e. pressing the USER button on Nucleo board)
  *         and send the updated angle data to the remote client.
- *
- * @param  Angle_t* anlges
  * @retval None
  */
 void User_Process()
@@ -300,6 +298,14 @@ void User_Process()
     set_connectable = FALSE;
   }  
 
+	 /* Check if the user has pushed the button */
+  if(BSP_PB_GetState(BUTTON_KEY) == RESET)
+  {
+    while (BSP_PB_GetState(BUTTON_KEY) == RESET);
+    
+    PRINTF("BUTTON PRESSED\n");
+		Double_Tap_Notify();
+  }
 }
 /**
  * @}

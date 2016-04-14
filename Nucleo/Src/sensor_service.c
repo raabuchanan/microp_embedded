@@ -319,12 +319,12 @@ tBleStatus Add_Double_Tap_Service(void)
   uint8_t uuid[16];
   
   COPY_DOUBLETAP_SERVICE_UUID(uuid);
-  ret = aci_gatt_add_serv(UUID_TYPE_128,  uuid, PRIMARY_SERVICE, 1,
+  ret = aci_gatt_add_serv(UUID_TYPE_128,  uuid, PRIMARY_SERVICE, 4,
                           &doubleTapServHandle);
   if (ret != BLE_STATUS_SUCCESS) goto fail;    
   
   COPY_DOUBLETAP_CHAR_UUID(uuid);
-  ret =  aci_gatt_add_char(doubleTapServHandle, UUID_TYPE_128, uuid, 1,
+  ret =  aci_gatt_add_char(doubleTapServHandle, UUID_TYPE_128, uuid, 4,
                            CHAR_PROP_NOTIFY, ATTR_PERMISSION_NONE, 0,
                            16, 0, &doubleTapCharHandle);
   if (ret != BLE_STATUS_SUCCESS) goto fail;
@@ -376,11 +376,19 @@ uint8_t LEDSpeed;
 void Attribute_Modified_CB(uint16_t handle, uint8_t data_length, uint8_t *att_data)
 {
   if(handle == ledSpeedCharHandle + 1){
-			PRINTF("Got LED speed data: %d\n", *att_data);
-		LEDSpeed = *att_data;
+		LEDSpeed = *(att_data);
+		PRINTF("Got LED speed data0: %x\n", *att_data);
+		PRINTF("Got LED speed data1: %x\n", *(att_data+1));
+		PRINTF("Got LED speed data2: %x\n", *(att_data+2));
+		PRINTF("Got LED speed data3: %x\n", *(att_data+3));
   } else if(handle == ledIntensityCharHandle + 1){
-			PRINTF("Got LED intensity data: %d\n", *att_data);
-		LEDIntensity = *att_data;
+		//TODO: Send data to discovery
+		PRINTF("Got LED intensity data0: %x\n", *att_data);
+		PRINTF("Got LED intensity data1: %x\n", *(att_data+1));
+		PRINTF("Got LED intensity data2: %x\n", *(att_data+2));
+		PRINTF("Got LED intensity data3: %x\n", *(att_data+3));
+		LEDIntensity = *(att_data+3);
+
   }
 }
 
