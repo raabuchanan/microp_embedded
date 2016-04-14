@@ -30,7 +30,6 @@ extern osThreadId tid_Thread_drive;
 
 extern int IS_TRANSMITTING;
 
-TIM_HandleTypeDef* timHandleTypeDef;            /** timer handler to be initialized */
 osMutexId temp_mutex;														/** temperature mutex */
 osMutexId pitch_mutex;													/** pitch mutex */
 osMutexId roll_mutex;														/** roll mutex */
@@ -110,8 +109,7 @@ int main (void) {
 	LED_GPIO_Init();
 	
 	/* Initialize timer */
-	timHandleTypeDef = malloc(sizeof(*timHandleTypeDef));
-	initTimer(timHandleTypeDef);
+	initTimer();
 
 	/* Start the threads */
 	start_Thread_angles();
@@ -140,8 +138,6 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
 		}
 	} else{
 		osSignalSet(tid_Thread_angles, 1);
-		
-
 	}
 }
 

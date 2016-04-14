@@ -43,6 +43,8 @@
 #include "lis3dsh.h"
 #include "nucleo_interface.h"
 
+extern TIM_HandleTypeDef timHandleTypeDef;
+
 /** @addtogroup STM32F4xx_HAL_Examples
   * @{
   */
@@ -163,7 +165,7 @@ void EXTI4_IRQHandler(void)
  */
 void TIM3_IRQHandler(void)
 {
-	HAL_TIM_IRQHandler(timHandleTypeDef);
+	HAL_TIM_IRQHandler(&timHandleTypeDef);
 }
 
 /**

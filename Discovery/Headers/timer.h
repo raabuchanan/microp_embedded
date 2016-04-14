@@ -19,6 +19,6 @@
  * @param      timHandleTypeDef  the timer handle, which should be initialized
  * with enough memory
  */
-void initTimer(TIM_HandleTypeDef* timHandleTypeDef);
+void initTimer(void);
 
 #endif

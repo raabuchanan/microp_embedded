@@ -10,10 +10,10 @@
   */
 
 #include "stm32f4xx_hal.h"
+TIM_HandleTypeDef timHandleTypeDef;            /** timer handler to be initialized */
+TIM_Base_InitTypeDef timInitTypeDef;
 
-void initTimer(TIM_HandleTypeDef* timHandleTypeDef) {
-	TIM_Base_InitTypeDef timInitTypeDef;
-
+void initTimer(void) {
 	__TIM3_CLK_ENABLE(); // Enable clock for TIM3 timer
 
 	timInitTypeDef.Prescaler = 1000;
@@ -21,11 +21,11 @@ void initTimer(TIM_HandleTypeDef* timHandleTypeDef) {
 	timInitTypeDef.Period = 840; // 840 * 1000 = 840 000 --> final frequency is 100 Hz because clock is 84MHz
 	timInitTypeDef.ClockDivision = TIM_CLOCKDIVISION_DIV1;
 
-	timHandleTypeDef -> Instance = TIM3;
-	timHandleTypeDef -> Init = timInitTypeDef;
+	timHandleTypeDef.Instance = TIM3;
+	timHandleTypeDef.Init = timInitTypeDef;
 
-	HAL_TIM_Base_Init(timHandleTypeDef);
-	HAL_TIM_Base_Start_IT(timHandleTypeDef);
+	HAL_TIM_Base_Init(&timHandleTypeDef);
+	HAL_TIM_Base_Start_IT(&timHandleTypeDef);
 
 	HAL_NVIC_SetPriority(TIM3_IRQn, 0, 1); // timer (used to check for keypad presses) has higher priority than accelerometer to make sure an accelerometer reading will not block the keypad reading when the two interrupts conflict
 	HAL_NVIC_EnableIRQ(TIM3_IRQn);

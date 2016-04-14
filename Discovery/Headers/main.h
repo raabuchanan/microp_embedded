@@ -33,6 +33,5 @@ typedef enum
 	ROLL = 0x03
 } DisplayMode;
 
-extern TIM_HandleTypeDef* timHandleTypeDef;
 
 #endif

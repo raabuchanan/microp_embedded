@@ -38,7 +38,6 @@ int start_Thread_drive (void) {
 	void Thread_drive(void const *argument) 
 	{
 		drive_PWM_Init();
-		
 		while(1){
 			motorSpeed = (int)roll;
 			set_drive_left(motorSpeed);
