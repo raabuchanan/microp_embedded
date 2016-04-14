@@ -292,8 +292,6 @@ int main(void)
 /**
  * @brief  Process user input (i.e. pressing the USER button on Nucleo board)
  *         and send the updated angle data to the remote client.
- *
- * @param  Angle_t* anlges
  * @retval None
  */
 void User_Process()
