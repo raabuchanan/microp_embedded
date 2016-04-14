@@ -46,7 +46,7 @@ int start_Thread_LED (void) {
 		currentPin = GPIO_PIN_12;
 		while(1){
 			osSignalWait(1, osWaitForever);
-			if (speed == 0)
+			if (speed == 10)
 			{	
 				LED_PWM_Init();
 				setIntensity(intensity);
@@ -81,13 +81,13 @@ void unsetAllLEDs()
 
 void rotate()
 {
-	scaledSpeed = speed%10;
-	scaledSpeed = ((11-scaledSpeed)*MAXSPEED)/10;
+//	scaledSpeed = speed%10 - 10;
+//	scaledSpeed = ((11-scaledSpeed)*MAXSPEED)/10;
 	
 	if(speed > 10)
-		rotateLeft(scaledSpeed);
+		rotateLeft(MAXSPEED/(speed-10));
 	else if(speed < 10)
-		rotateRight(scaledSpeed);
+		rotateRight(MAXSPEED/(10-speed));
 }
 
 void rotateLeft(int delay)

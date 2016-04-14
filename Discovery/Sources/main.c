@@ -15,17 +15,18 @@
 #include "main.h"
 
 
-extern void initializeADC_IO			(void);
-
-extern void start_Thread_temperature			(void);
-extern void start_Thread_angles			(void);
-extern void start_Thread_LED		(void);
-extern int start_Thread_doubleTap			(void);
+extern void initializeADC_IO(void);
+extern void start_Thread_temperature(void);
+extern void start_Thread_angles(void);
+extern void start_Thread_LED(void);
+extern int start_Thread_doubleTap(void);
+extern int start_Thread_drive(void);
 
 extern osThreadId tid_Thread_temperature;
 extern osThreadId tid_Thread_angles;
 extern osThreadId tid_Thread_doubleTap; 
 extern osThreadId tid_Thread_LED; 
+extern osThreadId tid_Thread_drive; 
 
 extern int IS_TRANSMITTING;
 
@@ -105,8 +106,8 @@ int main (void) {
 	nucleo_SPI_init();
 	
 	/* Initialize the LEDs and PWM control */
-	LED_PWM_Init();
-	//LED_GPIO_Init();
+	//LED_PWM_Init();
+	LED_GPIO_Init();
 	
 	/* Initialize timer */
 	timHandleTypeDef = malloc(sizeof(*timHandleTypeDef));
@@ -115,8 +116,9 @@ int main (void) {
 	/* Start the threads */
 	start_Thread_angles();
 	start_Thread_temperature();
-	//start_Thread_LED();
+	start_Thread_LED();
 	start_Thread_doubleTap();
+	//start_Thread_drive();
 	
 	/* start thread execution*/
 	osKernelStart();  
@@ -138,11 +140,12 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
 		}
 	} else{
 		osSignalSet(tid_Thread_angles, 1);
-		osSignalSet(tid_Thread_LED, 1);
+		
 
 	}
 }
 
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
 	osSignalSet(tid_Thread_temperature, 1);
+	osSignalSet(tid_Thread_LED, 1);
 }

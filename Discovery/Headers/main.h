@@ -20,6 +20,7 @@
 #include "kalmanfilter_c.h"
 #include "timer.h"
 #include "pwm.h"
+#include "led.h"
 #include "nucleo_interface.h"
 
 #define TX_PKG_SIZE 19

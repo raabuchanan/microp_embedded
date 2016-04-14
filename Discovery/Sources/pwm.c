@@ -69,7 +69,7 @@ void LED_PWM_Init(void){
 
 void drive_PWM_Init(void){
 	
-	pwmDriveInitTypeDef.Prescaler = 200;
+	pwmDriveInitTypeDef.Prescaler = 100;
 	pwmDriveInitTypeDef.CounterMode = TIM_COUNTERMODE_DOWN;
 	pwmDriveInitTypeDef.Period = 840; // 840 * 200 = 168 000 --> final frequency is 500 Hz because clock is 84MHz
 	pwmDriveInitTypeDef.ClockDivision = TIM_CLOCKDIVISION_DIV1;
@@ -127,13 +127,13 @@ void set_blue_pwm(uint32_t intensity){
 void set_drive_left(uint32_t intensity){
 	HAL_TIM_PWM_Stop(&pwmDriveHandleTypeDef, TIM_CHANNEL_2);
 	redOCInitTypeDef.Pulse = intensity;
-	HAL_TIM_PWM_ConfigChannel(&pwmDriveHandleTypeDef, &leftOCInitTypeDef, TIM_CHANNEL_3); //Channel 3 for Red
+	HAL_TIM_PWM_ConfigChannel(&pwmDriveHandleTypeDef, &leftOCInitTypeDef, TIM_CHANNEL_2); //Channel 3 for Red
 	HAL_TIM_PWM_Start(&pwmDriveHandleTypeDef, TIM_CHANNEL_2);
 }
 void set_drive_right(uint32_t intensity){
 	HAL_TIM_PWM_Stop(&pwmDriveHandleTypeDef, TIM_CHANNEL_3);
 	blueOCInitTypeDef.Pulse = intensity;
-	HAL_TIM_PWM_ConfigChannel(&pwmDriveHandleTypeDef, &rightOCInitTypeDef, TIM_CHANNEL_4); //Channel 4 for Blue
+	HAL_TIM_PWM_ConfigChannel(&pwmDriveHandleTypeDef, &rightOCInitTypeDef, TIM_CHANNEL_3); //Channel 4 for Blue
 	HAL_TIM_PWM_Start(&pwmDriveHandleTypeDef, TIM_CHANNEL_3);
 }
 
@@ -186,7 +186,7 @@ void HAL_TIM_PWM_MspInit(TIM_HandleTypeDef *htim)
 		
 		__GPIOA_CLK_ENABLE(); //GPIOA for Drive
 		
-		/*Green LED*/
+		/*Left Wheel*/
 		GPIO_InitStruct.Pin = GPIO_PIN_1;
 		GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
 		GPIO_InitStruct.Pull = GPIO_PULLDOWN;
@@ -194,7 +194,7 @@ void HAL_TIM_PWM_MspInit(TIM_HandleTypeDef *htim)
 		GPIO_InitStruct.Alternate = GPIO_AF2_TIM5;
 		HAL_GPIO_Init(GPIOA, &GPIO_InitStruct); 
 		
-		/*Orange LED*/
+		/*Right Wheel*/
 		GPIO_InitStruct.Pin = GPIO_PIN_2;
 		GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
 		GPIO_InitStruct.Pull = GPIO_PULLDOWN;
