@@ -17,9 +17,14 @@
 void Thread_LED(void const *argument);                  /** thread function */
 void setAllLEDs(void);
 void unsetAllLEDs(void);
+void rotateRight(int speed);
+void rotateLeft(int speed);
 osThreadId tid_Thread_LED;                               /** thread id */
 osThreadDef(Thread_LED, osPriorityBelowNormal, 1, 0);  
+uint16_t currentPin =  0;
+int scaledSpeed = 0;
 extern int doubleTap;
+extern float pitch, roll;
 /**----------------------------------------------------------------------------
  *      Create the thread within RTOS context
  *---------------------------------------------------------------------------*/
@@ -35,30 +40,32 @@ int start_Thread_LED (void) {
  *---------------------------------------------------------------------------*/
 	void Thread_LED(void const *argument) 
 	{
-		
+		currentPin = GPIO_PIN_12;
 		while(1){
 			osSignalWait(1, osWaitForever);
-			if(doubleTap == 0)
-			{
-				LED_PWM_DeInit();
-				unsetAllLEDs();
-			}
-			else if (doubleTap == 1)
+			if (pitch > 90)
 			{	
 				LED_PWM_DeInit();
 				LED_GPIO_Init();
 				setAllLEDs();
 			}
-			else if (doubleTap == 2)
+			else if (roll > 90)
 			{
 				unsetAllLEDs();
+				//LED_GPIO_DeInit();
 				LED_PWM_Init();
 			} 
-			//todo: Adjust speed of rotation
-			else if (doubleTap == 3)
+			else if (pitch < 90)
 			{
-				unsetAllLEDs();
-				LED_PWM_Init();
+				LED_PWM_DeInit();
+				LED_GPIO_Init();
+				rotateLeft(10);
+			} 
+			else if (roll < 90)
+			{
+				LED_PWM_DeInit();
+				LED_GPIO_Init();
+				rotateRight(1);
 			} 
 			osSignalClear(tid_Thread_LED, 1);
 		}
@@ -78,4 +85,62 @@ void unsetAllLEDs()
 	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_13, GPIO_PIN_RESET);
 	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_14, GPIO_PIN_RESET);
 	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_15, GPIO_PIN_RESET);
+}
+
+void rotateLeft(int speed)
+{
+	scaledSpeed = ((11-speed)*MAXSPEED)/10;
+	osDelay(scaledSpeed);
+	switch (currentPin)
+	{
+		case GPIO_PIN_12:
+			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_12, GPIO_PIN_RESET);
+			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_13, GPIO_PIN_SET);
+			currentPin = GPIO_PIN_13;
+			break;
+		case GPIO_PIN_13:
+			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_13, GPIO_PIN_RESET);
+			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_14, GPIO_PIN_SET);
+			currentPin = GPIO_PIN_14;
+			break;
+		case GPIO_PIN_14:
+			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_14, GPIO_PIN_RESET);
+			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_15, GPIO_PIN_SET);
+			currentPin = GPIO_PIN_15;
+			break;
+		case GPIO_PIN_15:
+			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_15, GPIO_PIN_RESET);
+			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_12, GPIO_PIN_SET);
+			currentPin = GPIO_PIN_12;
+			break;
+	}
+}
+
+void rotateRight(int speed)
+{
+	scaledSpeed = ((10-speed)*MAXSPEED)/10;
+	osDelay(scaledSpeed);
+	switch (currentPin)
+	{
+		case GPIO_PIN_12:
+			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_12, GPIO_PIN_RESET);
+			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_15, GPIO_PIN_SET);
+			currentPin = GPIO_PIN_15;
+			break;
+		case GPIO_PIN_13:
+			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_13, GPIO_PIN_RESET);
+			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_12, GPIO_PIN_SET);
+			currentPin = GPIO_PIN_12;
+			break;
+		case GPIO_PIN_14:
+			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_14, GPIO_PIN_RESET);
+			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_13, GPIO_PIN_SET);
+			currentPin = GPIO_PIN_13;
+			break;
+		case GPIO_PIN_15:
+			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_15, GPIO_PIN_RESET);
+			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_14, GPIO_PIN_SET);
+			currentPin = GPIO_PIN_14;
+			break;
+	}
 }

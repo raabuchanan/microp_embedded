@@ -21,7 +21,8 @@ uint8_t pkg[TX_PKG_SIZE];
 int IS_TRANSMITTING = 0;
 int RXCounter = 0;
 int successfulRX = 0;
-
+int speed = 0;
+int intensity = 0;
 
 void nucleo_SPI_init(void)
 {
@@ -77,11 +78,12 @@ HAL_StatusTypeDef receive_pkg(void){
 	
 	for (i=0;i<3;i++){
 		if(data[i] == '!' && data[i+1] == '!' && data[i+2] == '!'){
-			set_green_pwm(data[i+3]);
-		  set_orange_pwm(data[i+4]);
-		  set_red_pwm(data[i+5]);
-			set_blue_pwm(data[i+6]);
-			/*speed = data[i+7]*/
+//			set_green_pwm(data[i+3]);
+//			set_orange_pwm(data[i+4]);
+//			set_red_pwm(data[i+5]);
+//			set_blue_pwm(data[i+6]);
+			intensity = data[i+6];
+			speed = data[i+7];
 			successfulRX ++;
 		}
 	}
