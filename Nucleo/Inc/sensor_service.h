@@ -111,6 +111,7 @@ tBleStatus Add_Temperature_Service(void);
 tBleStatus Add_LED_Service(void);
 tBleStatus Add_Double_Tap_Service(void);
 tBleStatus Temp_Update(uint8_t temp_data[]);
+tBleStatus Double_Tap_Notify(void);
 void       setConnectable(void);
 void       enableNotification(void);
 void       GAP_ConnectionComplete_CB(uint8_t addr[6], uint16_t handle);

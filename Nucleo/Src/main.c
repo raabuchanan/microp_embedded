@@ -76,9 +76,8 @@
 /** @defgroup MAIN_Private_Variables
  * @{
  */
- extern void discovery_SPI_init(void);
- extern HAL_StatusTypeDef update_phone(uint32_t timeOut);
- extern HAL_StatusTypeDef update_discovery(uint8_t* data);
+extern void discovery_SPI_init(void);
+extern HAL_StatusTypeDef update_discovery(void);
 /* Private variables ---------------------------------------------------------*/
 extern volatile uint8_t set_connectable;
 extern volatile int connected;
@@ -275,16 +274,14 @@ int main(void)
   /* Set output power level */
   ret = aci_hal_set_tx_power_level(1,4);
 	
-	uint8_t test[5] ={0,1,35,255,10}; //green, orange, red, blue, speed
   while(1)
   {
 		
     HCI_Process();
     User_Process();
 		
-		update_discovery(test);
+		update_discovery();
 		
-		test[1] +=1;
 		HAL_Delay(50);
   }
 }

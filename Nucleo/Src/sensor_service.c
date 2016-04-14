@@ -369,12 +369,18 @@ tBleStatus Double_Tap_Notify(void)
  * @param  Pointer to the modified attribute data
  * @retval None
  */
+
+uint8_t LEDIntensity;
+uint8_t LEDSpeed;
+
 void Attribute_Modified_CB(uint16_t handle, uint8_t data_length, uint8_t *att_data)
 {
   if(handle == ledSpeedCharHandle + 1){
 			PRINTF("Got LED speed data: %d\n", *att_data);
+		LEDSpeed = *att_data;
   } else if(handle == ledIntensityCharHandle + 1){
 			PRINTF("Got LED intensity data: %d\n", *att_data);
+		LEDIntensity = *att_data;
   }
 }
 

@@ -31,6 +31,7 @@ int beginCountdown = 0;
 int debounce = 1;
 int skippedIteration = 0;
 int spiked = 0;
+int doubleTapFlag = 0;
 
 float active = 0;
 float spikingAverage[10];
@@ -155,6 +156,7 @@ int start_Thread_doubleTap (void) {
 						//If flagged twice, then double tap detected
 						if(tappedTwice)
 						{
+							doubleTapFlag = 1;
 							doubleTap++;
 							tappedOnce = 0;
 							tappedTwice = 0;
