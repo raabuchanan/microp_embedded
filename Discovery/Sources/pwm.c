@@ -71,7 +71,7 @@ void drive_PWM_Init(void){
 	
 	pwmDriveInitTypeDef.Prescaler = 100;
 	pwmDriveInitTypeDef.CounterMode = TIM_COUNTERMODE_DOWN;
-	pwmDriveInitTypeDef.Period = 840; // 840 * 200 = 168 000 --> final frequency is 500 Hz because clock is 84MHz
+	pwmDriveInitTypeDef.Period = 84; // 840 * 200 = 168 000 --> final frequency is 500 Hz because clock is 84MHz
 	pwmDriveInitTypeDef.ClockDivision = TIM_CLOCKDIVISION_DIV1;
 
 	pwmDriveHandleTypeDef.Instance = TIM5;
@@ -79,12 +79,12 @@ void drive_PWM_Init(void){
 
 	HAL_TIM_PWM_Init(&pwmDriveHandleTypeDef);
 	
-	leftOCInitTypeDef.OCFastMode = TIM_OCFAST_DISABLE;
+	leftOCInitTypeDef.OCFastMode = TIM_OCFAST_ENABLE;
 	leftOCInitTypeDef.OCMode = TIM_OCMODE_PWM1;
 	leftOCInitTypeDef.OCPolarity = TIM_OCPOLARITY_HIGH;
 	leftOCInitTypeDef.Pulse = 0; //Initialize to zero intensity
 
-	rightOCInitTypeDef.OCFastMode = TIM_OCFAST_DISABLE;
+	rightOCInitTypeDef.OCFastMode = TIM_OCFAST_ENABLE;
 	rightOCInitTypeDef.OCMode = TIM_OCMODE_PWM1;
 	rightOCInitTypeDef.OCPolarity = TIM_OCPOLARITY_HIGH;
 	rightOCInitTypeDef.Pulse = 0; //Initialize to zero intensity
