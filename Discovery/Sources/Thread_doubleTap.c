@@ -15,6 +15,7 @@
 #define M_PI 3.14159265358979323846            							/** an approximation of pi */
 
 void Thread_doubleTap(void const *argument);                  /** thread function */
+float computeAvg(float* avg);
 osThreadId tid_Thread_doubleTap;                               /** thread id */
 osThreadDef(Thread_doubleTap, osPriorityAboveNormal, 1, 250);  
 
@@ -38,6 +39,9 @@ float spikingAverage[10];
 float globalAverageZ[10];
 float globalAverageX[10];
 float globalAverageY[10];
+float previousAverageZ[10];
+float previousAverageX[10];
+float previousAverageY[10];
 
 float average;
 float returnGap = 0;
@@ -48,7 +52,10 @@ float previousAvgY;
 float runningAvgZ;//output average with high value included
 float runningAvgX;//output average with high value included
 float runningAvgY;//output average with high value included*/
-
+kalman_state kstateX = {1, 100, 1060, 0, 0}; // {q, r, x, p, k}
+kalman_state kstateY = {1, 100, 1060, 0, 0}; // {q, r, x, p, k}
+kalman_state kstateZ = {1, 100, 1060, 0, 0}; // {q, r, x, p, k}
+kalman_state spikingKState =  {1, 100, 1060, 0, 0}; // {q, r, x, p, k}
 extern float filteredX;
 extern float filteredY;
 extern float filteredZ;
@@ -77,29 +84,49 @@ int start_Thread_doubleTap (void) {
 			if(beginCountdown)
 				cyclePassed++;
 			test = filteredZ;
-			if(j<10)
-			{				
-				globalAverageX[readingIndex%10] = filteredX;
-				globalAverageY[readingIndex%10] = filteredY;
-				spikingAverage[readingIndex%10] = filteredZ;
-				globalAverageZ[readingIndex++%10] = filteredZ;
+			if(j<20)
+			{		
 
+				runningAvgX = kalmanfilter_c(filteredX, &kstateX);
+				runningAvgY = kalmanfilter_c(filteredY, &kstateY);
+				runningAvgZ = kalmanfilter_c(filteredZ, &kstateZ);
+				if(j<10)
+				{
+					previousAverageX[j] = runningAvgX;
+					previousAverageY[j] = runningAvgY;
+					previousAverageZ[j] = runningAvgZ;
+				}
+				else if(j>10)
+				{
+					globalAverageX[j%10] = runningAvgX;
+					globalAverageY[j%10] = runningAvgY;
+					globalAverageZ[j%10] = runningAvgZ;
+				}
+				previousAvgX = computeAvg(previousAverageX);
+				previousAvgY = computeAvg(previousAverageY);
+				previousAvgZ = computeAvg(previousAverageZ);
+
+				runningAvgX = computeAvg(globalAverageX);
+				runningAvgY = computeAvg(globalAverageY);
+				runningAvgZ = computeAvg(globalAverageZ);
 				j++;
 			}
 			else
 			{			
-				for(i = 0,average = 0,runningAvgZ = 0, runningAvgX = 0, runningAvgY = 0; i<10 ;i++)
-				{
-					average += spikingAverage[i];
-					runningAvgX += globalAverageX[i];
-					runningAvgY += globalAverageY[i];
-					runningAvgZ += globalAverageZ[i];
-				}
-				average /= 10;	
-				runningAvgZ /= 10;
-				runningAvgX /= 10;
-				runningAvgY /= 10;
-				
+//				for(i = 0,average = 0,runningAvgZ = 0, runningAvgX = 0, runningAvgY = 0; i<10 ;i++)
+//				{
+//					average += spikingAverage[i];
+//					runningAvgX += globalAverageX[i];
+//					runningAvgY += globalAverageY[i];
+//					runningAvgZ += globalAverageZ[i];
+//				}
+//				average /= 10;	
+//				runningAvgZ /= 10;
+//				runningAvgX /= 10;
+//				runningAvgY /= 10;
+				runningAvgX = computeAvg(globalAverageX);
+				runningAvgY = computeAvg(globalAverageY);
+				runningAvgZ = computeAvg(globalAverageZ);
 				//Waits for stable value of the average 
 				//to make sure the board is not moving
 				if(fabs(previousAvgZ-runningAvgZ)<5 && 
@@ -108,14 +135,23 @@ int start_Thread_doubleTap (void) {
 				{
 
 						//Values safe to use 
-						for(i = 0; i<10 ;i++)
-						{
-							//Stores all values from the gloabl running average 
-							//to the local average to detect spike
-							//if(fabs(filteredZ - average) < 50)
-								spikingAverage[i] = globalAverageZ[i];
-						}
+//						for(i = 0; i<10 ;i++)
+//						{
+//							//Stores all values from the gloabl running average 
+//							//to the local average to detect spike
+//							//if(fabs(filteredZ - average) < 50)
+//								spikingAverage[i] = globalAverageZ[i];
+//						}
 						//unlock the flag
+						if(updateAvg == 0)
+						{
+							spikingKState.q = 1;
+							spikingKState.r = 100;
+							spikingKState.x = 1060;
+							spikingKState.p = 0;
+							spikingKState.k = 0;
+							average =  kalmanfilter_c(filteredZ, &spikingKState);
+						}
 						updateAvg = 1;
 
 				}
@@ -125,11 +161,11 @@ int start_Thread_doubleTap (void) {
 				
 				//Runs only when boad is stable ie. When it is not moving
 				if(updateAvg)
-				{
+				{					
 					if(debounce>0)
 						debounce--;
 					//if tap detected
-					if(fabs(filteredZ - average)>10 && fabs(filteredZ - average)<50 && debounce == 0)
+					if(average - filteredZ  >10 /*&& fabs(filteredZ - average)<100*/ && debounce == 0)
 					{
 						//If first spike, save the spiked value
 						//And record as first tap
@@ -137,7 +173,6 @@ int start_Thread_doubleTap (void) {
 						{
 							active = filteredZ;
 							beginCountdown = 1;
-							returnGap = fabs(filteredZ - average);
 							tappedOnce = 1;
 						}		
 						//Once tapped, if nothing else happens, value should return to
@@ -150,7 +185,7 @@ int start_Thread_doubleTap (void) {
 							//then board returning to original position
 							/*if(fabs(filteredZ - average) < returnGap)
 								returnGap = fabs(filteredZ - average);*/
-							if(tappedTimer > 5)
+							if(tappedTimer > 12)
 								tappedTwice = 1;							
 						}
 						//If flagged twice, then double tap detected
@@ -165,13 +200,13 @@ int start_Thread_doubleTap (void) {
 							debounce = 20;
 						}		
 					}
-						//Does not include the "spiked" value in the average
-						//calculation
+					else
+						average =  kalmanfilter_c(filteredZ, &spikingKState);
 						
 				}		
-				globalAverageX[readingIndex%10] = filteredX;
-				globalAverageY[readingIndex%10] = filteredY;
-				globalAverageZ[readingIndex++%10] = filteredZ;
+				globalAverageX[readingIndex%10] = kalmanfilter_c(filteredX, &kstateX);
+				globalAverageY[readingIndex%10] = kalmanfilter_c(filteredX, &kstateY);
+				globalAverageZ[readingIndex++%10] = kalmanfilter_c(filteredX, &kstateZ);
 				if(cyclePassed > 20)
 				{
 					tappedOnce = 0;
@@ -189,3 +224,15 @@ int start_Thread_doubleTap (void) {
 			osSignalClear(tid_Thread_doubleTap, 1);
 		}
 	}
+
+float computeAvg(float* avg)
+{
+	int i = 0;
+	float average = 0;
+	for(i=0;i<10;i++)
+	{
+		average += avg[i];
+	}
+	average /= 10;
+	return average;
+}
