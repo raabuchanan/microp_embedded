@@ -25,9 +25,9 @@ TIM_OC_InitTypeDef rightOCInitTypeDef;
 
 void LED_PWM_Init(void){
 
-	pwmLEDsInitTypeDef.Prescaler = 200;
+	pwmLEDsInitTypeDef.Prescaler = 100;
 	pwmLEDsInitTypeDef.CounterMode = TIM_COUNTERMODE_DOWN;
-	pwmLEDsInitTypeDef.Period = 840; // 840 * 200 = 168 000 --> final frequency is 500 Hz because clock is 84MHz
+	pwmLEDsInitTypeDef.Period = 84; // 84 * 100 = 8400 --> final frequency is 10 kHz because clock is 84MHz
 	pwmLEDsInitTypeDef.ClockDivision = TIM_CLOCKDIVISION_DIV1;
 
 	pwmLEDsHandleTypeDef.Instance = TIM4;
@@ -126,14 +126,14 @@ void set_blue_pwm(uint32_t intensity){
 
 void set_drive_left(uint32_t intensity){
 	HAL_TIM_PWM_Stop(&pwmDriveHandleTypeDef, TIM_CHANNEL_2);
-	redOCInitTypeDef.Pulse = intensity;
-	HAL_TIM_PWM_ConfigChannel(&pwmDriveHandleTypeDef, &leftOCInitTypeDef, TIM_CHANNEL_2); //Channel 3 for Red
+	leftOCInitTypeDef.Pulse = intensity;
+	HAL_TIM_PWM_ConfigChannel(&pwmDriveHandleTypeDef, &leftOCInitTypeDef, TIM_CHANNEL_2); //Channel 2 for Left
 	HAL_TIM_PWM_Start(&pwmDriveHandleTypeDef, TIM_CHANNEL_2);
 }
 void set_drive_right(uint32_t intensity){
 	HAL_TIM_PWM_Stop(&pwmDriveHandleTypeDef, TIM_CHANNEL_3);
-	blueOCInitTypeDef.Pulse = intensity;
-	HAL_TIM_PWM_ConfigChannel(&pwmDriveHandleTypeDef, &rightOCInitTypeDef, TIM_CHANNEL_3); //Channel 4 for Blue
+	rightOCInitTypeDef.Pulse = intensity;
+	HAL_TIM_PWM_ConfigChannel(&pwmDriveHandleTypeDef, &rightOCInitTypeDef, TIM_CHANNEL_3); //Channel 3 for Right
 	HAL_TIM_PWM_Start(&pwmDriveHandleTypeDef, TIM_CHANNEL_3);
 }
 

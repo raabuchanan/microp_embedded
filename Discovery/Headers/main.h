@@ -24,7 +24,7 @@
 #include "nucleo_interface.h"
 
 #define TX_PKG_SIZE 19
-#define RX_PKG_SIZE 11
+#define RX_PKG_SIZE 8
 
 typedef enum
 {

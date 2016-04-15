@@ -80,10 +80,7 @@ void unsetAllLEDs()
 }
 
 void rotate()
-{
-//	scaledSpeed = speed%10 - 10;
-//	scaledSpeed = ((11-scaledSpeed)*MAXSPEED)/10;
-	
+{	
 	if(speed > 10)
 		rotateLeft(MAXSPEED/(speed-10));
 	else if(speed < 10)

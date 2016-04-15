@@ -77,13 +77,10 @@ HAL_StatusTypeDef update_discovery(void){
 	pkg[1]  = '!';
 	pkg[2]  = '!';
 	pkg[3]  = LEDIntensity;
-	pkg[4]  = LEDIntensity;
-	pkg[5]  = LEDIntensity;
-	pkg[6]  = LEDIntensity;
-	pkg[7]  = LEDSpeed;
-	pkg[8]  = '$';
-	pkg[9]  = '$';
-	pkg[10] = '$';
+	pkg[4]  = LEDSpeed;
+	pkg[5]  = '$';
+	pkg[6]  = '$';
+	pkg[7] = '$';
 	
 	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_10, GPIO_PIN_SET);/*Send signal on GPIO line to nucleo*/
 	txStatus = HAL_SPI_Transmit(&discoverySPIHandle, pkg, TX_PKG_SIZE,1);/*Transmit Data*/

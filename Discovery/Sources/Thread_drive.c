@@ -19,7 +19,7 @@ void Thread_drive(void const *argument);                  /** thread function */
 osThreadId tid_Thread_drive;                               /** thread id */
 osThreadDef(Thread_drive, osPriorityAboveNormal, 1, 0);  
 uint8_t motorSpeed;
-
+extern int speed, intensity;
 extern float pitch, roll;
 
 /**----------------------------------------------------------------------------
@@ -40,10 +40,19 @@ int start_Thread_drive (void) {
 		int test = 0;
 		drive_PWM_Init();
 		while(1){
-			motorSpeed = (int)roll;
-			set_drive_left(test);
-			set_drive_right(test);
-			osDelay(500);
+			motorSpeed = (int)(intensity*84/127);
+			
+			if(speed <10){ //left turn
+				set_drive_left(motorSpeed*(10-speed)/10);
+				set_drive_right(motorSpeed/(10-speed));
+			} else if (speed>10){//right turn
+				set_drive_left(motorSpeed/(speed-10));
+				set_drive_right(motorSpeed*(speed-10)/10);
+			} else{
+				set_drive_left(motorSpeed);
+				set_drive_right(motorSpeed);
+			}
+				osDelay(50);
 			test ++;
 		}
 	}

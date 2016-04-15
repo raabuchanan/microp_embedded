@@ -378,17 +378,9 @@ void Attribute_Modified_CB(uint16_t handle, uint8_t data_length, uint8_t *att_da
   if(handle == ledSpeedCharHandle + 1){
 		LEDSpeed = *(att_data);
 		PRINTF("Got LED speed data0: %x\n", *att_data);
-		PRINTF("Got LED speed data1: %x\n", *(att_data+1));
-		PRINTF("Got LED speed data2: %x\n", *(att_data+2));
-		PRINTF("Got LED speed data3: %x\n", *(att_data+3));
   } else if(handle == ledIntensityCharHandle + 1){
-		//TODO: Send data to discovery
 		PRINTF("Got LED intensity data0: %x\n", *att_data);
-		PRINTF("Got LED intensity data1: %x\n", *(att_data+1));
-		PRINTF("Got LED intensity data2: %x\n", *(att_data+2));
-		PRINTF("Got LED intensity data3: %x\n", *(att_data+3));
-		LEDIntensity = *(att_data+3);
-
+		LEDIntensity = *(att_data);
   }
 }
 

@@ -482,6 +482,11 @@
               <FileType>1</FileType>
               <FilePath>.\Sources\led.c</FilePath>
             </File>
+            <File>
+              <FileName>Thread_drive.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\Thread_drive.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -1033,6 +1038,11 @@
               <FileType>1</FileType>
               <FilePath>.\Sources\led.c</FilePath>
             </File>
+            <File>
+              <FileName>Thread_drive.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\Thread_drive.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -1583,6 +1593,11 @@
               <FileName>led.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Sources\led.c</FilePath>
+            </File>
+            <File>
+              <FileName>Thread_drive.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\Thread_drive.c</FilePath>
             </File>
           </Files>
         </Group>

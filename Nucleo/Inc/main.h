@@ -16,6 +16,6 @@
 
 
 #define RX_PKG_SIZE 19
-#define TX_PKG_SIZE 11
+#define TX_PKG_SIZE 8
 
 #endif

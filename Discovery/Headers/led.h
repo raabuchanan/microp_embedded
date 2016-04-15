@@ -15,7 +15,7 @@
 #ifndef LED_H
 #define LED_H
 
-#define MAXSPEED 50
+#define MAXSPEED 500
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f4xx_hal.h"
